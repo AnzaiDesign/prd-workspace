@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "prd-review-manager": {
+      "command": "node",
+      "args": [
+        "E:\\PRD与评审记录工具\\PRD软件项目\\desktop\\mcp\\server.cjs",
+        "--root",
+        "请替换为项目目录绝对路径"
+      ]
+    }
+  }
+}

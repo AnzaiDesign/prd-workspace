@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PRD文档</title>
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+<style>body{margin:0;background:#f5f7fa}[v-cloak]{display:none}
+/* 顶部公共区：仅覆盖右侧内容区，不占用左侧导航 */
+.topbar{height:52px;flex:none;background:#fff;border-bottom:1px solid #ebeef5;display:flex;align-items:center;padding:0 20px;gap:10px}
+.topbar .sp{flex:1}
+.layout{display:flex;height:100vh;overflow:hidden}
+.rightcol{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;position:relative}
+.left{width:300px;flex:none;background:#fff;border-right:1px solid #ebeef5;display:flex;flex-direction:column}
+.left-head{padding:16px;border-bottom:1px solid #ebeef5}
+.left-head h1{font-size:16px;margin:0 0 6px}
+.menu{flex:1;overflow:auto}
+.menu .el-menu{border-right:none}
+.main{flex:1;overflow:auto;padding:20px 28px}
+.field{margin-bottom:16px}
+.card-head{display:flex;align-items:center}
+.card-head .sp{flex:1}
+.card-no{color:#909399;font-weight:400;margin-right:5px;font-variant-numeric:tabular-nums;min-width:34px;display:inline-block}
+.el-menu-item .mod-del{display:none;float:right;margin-top:14px;color:#c0c4cc;font-size:12px}
+.el-menu-item:hover .mod-del{display:inline-block}
+.el-menu-item .mod-del:hover{color:#f56c6c}
+.el-menu-item .mod-edit{margin-right:8px}
+.el-menu-item .mod-edit:hover{color:#409EFF}
+.review-item{border-bottom:1px dashed #f0d9a8;padding:8px 0}
+.review-item:last-child{border-bottom:none}
+/* 评审记录总览：筛选条 + 列表 */
+.rv-bar{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.rv-dlg{max-width:1200px;margin-bottom:0!important}
+.prd-edit-dlg{margin-bottom:0!important}
+.prd-edit-dlg .el-dialog__body{max-height:calc(92vh - 200px);overflow-y:auto;overflow-x:hidden}
+.prd-edit-dlg.is-fullscreen .el-dialog__body{max-height:calc(100vh - 190px)}
+.rv-bar .el-input,.rv-bar .el-select{width:auto}
+.rv-row-mod{color:#409EFF}
+.rv-row-card{font-weight:600;color:#303133}
+.rv-row-del{color:#c0c4cc}
+.rv-no{color:#409EFF;cursor:pointer;font-weight:600;font-variant-numeric:tabular-nums;text-decoration:underline;text-underline-offset:2px}
+.rv-no:hover{color:#66b1ff}
+/* 定位命中时给目标卡片加高亮 */
+.field.rv-hit{box-shadow:0 0 0 2px #409EFF;border-radius:4px;transition:box-shadow .3s}
+.rv-locate{margin-left:8px}
+.rv-stats{font-size:13px;color:#909399;margin-bottom:8px}
+.cl-tip{margin-top:10px;font-size:12px;color:#909399;line-height:1.6}
+.cl-tl{max-height:calc(92vh - 232px);overflow-y:auto;overflow-x:hidden;padding-right:6px}
+/* 右侧悬浮定位栏：返回顶部 + 当前模块各卡片 */
+.navrail{position:absolute;right:10px;bottom:16px;z-index:50;display:flex;flex-direction:column;gap:6px;align-items:center;max-height:calc(100% - 130px)}
+.navrail-list{display:flex;flex-direction:column;gap:6px;align-items:center;overflow-y:auto;overflow-x:hidden;max-height:100%;padding:2px}
+.navdot{width:16px;height:5px;border-radius:3px;background:#dcdfe6;cursor:pointer;flex:none;transition:all .15s}
+.navdot:hover{background:#409EFF;width:22px}
+.navdot.hit{background:#409EFF;width:22px}
+.navtop{width:26px;height:26px;border-radius:50%;border:1px solid #dcdfe6;background:#fff;color:#909399;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
+.navtop:hover{border-color:#409EFF;color:#409EFF}
+.prd-body{font-size:13px;color:#606266;line-height:1.7}
+.prd-h{font-size:13px;font-weight:700;color:#303133;margin:10px 0 6px}
+.prd-meta{margin:3px 0;line-height:1.7}
+.prd-meta .k{font-weight:700;color:#303133;margin-right:6px}
+.prd-p{margin:3px 0;white-space:pre-wrap}
+.prd-li{margin:3px 0 3px 4px}
+.prd-gap{height:6px}
+.prd-tblwrap{margin:6px 0 10px}
+.prd-cap{font-size:12px;font-weight:700;color:#409EFF;margin:8px 0 4px}
+table.prd-tbl{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+table.prd-tbl th,table.prd-tbl td{border:1px solid #ebeef5;padding:4px 6px;text-align:left;vertical-align:top;word-break:break-all}
+table.prd-tbl th{background:#fafafa;color:#909399;font-weight:400}
+table.prd-tbl td.prd-idx{width:46px;text-align:center;color:#909399}
+.field.sub{border-left:3px solid #409EFF;margin-top:-8px}
+.field.sub .el-card__header{padding:8px 12px;background:#f7fbff}
+.tag{display:inline-block;font-size:12px;line-height:20px;padding:0 8px;border-radius:10px;margin-right:8px}
+.tag-pop{background:#ecf5ff;color:#409EFF;border:1px solid #d9ecff}
+.tag-det{background:#f0f9eb;color:#67c23a;border:1px solid #e1f3d8}
+.sub-ttl{font-size:12px;color:#909399;font-weight:400}
+</style>
+</head>
+<body>
+<div id="app" v-cloak>
+<div class="layout">
+<div class="left">
+<div class="left-head">
+<h1 style="cursor:text" title="点击可修改文档标题" @click="startEditTitle">{{docTitle}}</h1>
+<el-input v-if="titleEditing" v-model="titleDraft" size="small" style="margin:6px 0 4px" placeholder="输入新标题，回车确认" @keyup.enter.native="saveTitle" @keyup.esc.native="cancelEditTitle">
+<el-button slot="append" type="primary" @click="saveTitle">确定</el-button>
+</el-input>
+<el-button v-else type="text" size="mini" style="color:#909399;padding:0 0 2px 0" @click="startEditTitle">修改标题</el-button>
+<el-link v-if="homeFile" type="primary" :href="homeFile" target="_blank" style="font-size:12px">对应页面：{{homeFileLabel}}</el-link>
+<div style="margin-top:8px"></div>
+</div>
+<div class="menu">
+<el-menu :default-active="cur" @select="selMod">
+<el-menu-item v-for="(m,i) in modules" :key="m.key" :index="m.key">
+<span>{{i+1}}. {{m.name}}</span><i class="el-icon-edit mod-del mod-edit" title="修改模块名称" @click.stop="openEditMod(m)"></i><i class="el-icon-close mod-del" title="删除该模块" @click.stop="delModule(m)"></i>
+</el-menu-item>
+</el-menu>
+<div style="border-top:1px solid #ebeef5;padding:10px 12px;flex:none"><el-button size="small" type="primary" plain style="width:100%" @click="openNewMod">新增模块</el-button></div>
+</div>
+<div style="border-top:1px solid #ebeef5;padding:12px;flex:none"><div style="display:flex;gap:6px"><el-button size="small" type="primary" style="flex:1" @click="saveFile">保存文件</el-button><el-button size="small" style="flex:1" @click="archDlg=true">归档</el-button></div><div style="margin-top:6px;text-align:center"><el-button type="text" size="mini" style="color:#c0c4cc" @click="clearDoc">清空本文档</el-button></div></div>
+</div>
+<div class="rightcol">
+<div class="topbar">
+<span class="sp"></span>
+<el-button v-if="deleted.length" size="small" type="warning" plain @click="delDlg=true">已删除 {{deleted.length}}</el-button>
+<el-button size="small" plain @click="openClAll">历史需求总览</el-button>
+<el-button size="small" type="primary" plain @click="openRvAll">评审记录总览</el-button>
+</div>
+<div class="main">
+<h2 v-if="curModule.key" style="margin:0 0 12px">{{curIndex+1}}. {{curModule.name}}<el-button size="small" type="primary" plain style="margin-left:12px" @click="openNewItem">新增数据项</el-button></h2>
+<el-empty v-if="!modules.length" description="文档已清空，点左侧「新增模块」开始录入"></el-empty>
+<template v-for="(it,ii) in curModule.items">
+<el-card class="field" :key="it.k" :data-card-key="it.k" shadow="never">
+<div slot="header" class="card-head"><span class="card-no">{{curIndex+1}}.{{ii+1}}.</span><span>{{it.t}}</span><span style="font-size:12px;color:#909399;margin-left:8px">{{mtimes[it.k]||""}}</span><span class="sp"></span><el-button size="mini" plain :disabled="isFirst(it)" @click="moveItem(it,-1)">上移</el-button><el-button size="mini" plain :disabled="isLast(it)" @click="moveItem(it,1)">下移</el-button><el-button size="mini" plain @click="openEdit(it)">编辑</el-button><el-button size="mini" plain @click="openHist(it)">历史需求</el-button><el-button size="mini" type="warning" plain @click="openReview(it)">评审记录</el-button><el-button size="mini" type="danger" plain @click="delItem(it)">删除</el-button></div>
+<div style="font-size:14px;color:#606266;line-height:1.8" v-if="blocks[it.k]&&blocks[it.k].main" v-html="blocks[it.k].main"></div>
+<div style="font-size:14px;color:#909399" v-if="(!blocks[it.k]||(!blocks[it.k].main&&!blocks[it.k].pop&&!blocks[it.k].det))&&!(tables[it.k]&&tables[it.k].length)">内容待补充</div>
+<div v-if="tbls(it.k,'main').length" style="margin-top:10px">
+<div v-for="(t,ti) in tbls(it.k,'main')" :key="ti" style="margin-bottom:10px">
+<div v-if="t.name" style="font-size:13px;font-weight:700;color:#606266;margin-bottom:4px">{{t.name}}</div>
+<el-table :data="t.rows" border size="mini">
+<el-table-column v-for="(c,ci) in t.cols" :key="ci" :label="c||('列'+(ci+1))"><template slot-scope="s">{{s.row[ci]}}</template></el-table-column>
+</el-table>
+</div>
+</div>
+<el-divider></el-divider>
+<div style="background:#fdf6ec;border:1px solid #faecd8;border-radius:4px;padding:10px 12px">
+<div style="display:flex;align-items:center"><span style="font-size:13px;font-weight:700;color:#e6a23c">评审记录</span><span style="font-size:12px;color:#c0a06a;margin-left:8px">（仅记录评审意见/结论，不作为PRD正文）</span><span style="flex:1"></span><el-button type="text" size="mini" @click="toggleR(it.k)">{{rOpen[it.k]?"收起":"展开"}}</el-button></div>
+<div v-show="rOpen[it.k]">
+<div v-if="!reviews[it.k]||!reviews[it.k].length" style="font-size:13px;color:#909399">暂无评审记录</div>
+<div v-else>
+<div class="review-item" v-for="(r,i) in reviews[it.k]" :key="i">
+<div><el-tag size="mini">{{r.stage}}</el-tag><span style="font-size:12px;color:#909399;margin-left:8px">{{rvDateText(r)}}</span><el-button type="text" size="mini" style="float:right" @click="delReview(it.k,i)">删除</el-button><el-button type="text" size="mini" style="float:right;margin-right:8px" @click="editReview(it.k,i)">修改</el-button></div>
+<div style="font-size:12px;color:#909399;margin-top:2px">评审参与人：{{r.users}}</div>
+<div style="font-size:13px;color:#606266;margin-top:4px;white-space:pre-wrap">{{r.content}}</div>
+<div v-if="rvStatusOf(r)==='不予修改'" style="font-size:12px;color:#b88230;margin-top:2px;white-space:pre-wrap">不修改理由：{{r.rsn||'（未填写）'}}<el-button type="text" size="mini" style="margin-left:6px" @click="openRsn(it.k,i)">修改</el-button></div>
+<div style="margin-top:6px;display:flex;align-items:center;flex-wrap:wrap">
+<span style="font-size:12px;color:#909399;margin-right:10px">处理标记</span>
+<el-checkbox :value="rvStatusOf(r)==='已修改'" @change="onFixCheck(it.k,i)">已修改</el-checkbox>
+<el-checkbox :value="rvStatusOf(r)==='不予修改'" @change="onDenyCheck(it.k,i)" style="margin-left:16px">不予修改</el-checkbox>
+</div>
+</div>
+</div>
+</div>
+</div>
+</el-card>
+</template>
+<el-empty v-if="curModule.key && !curModule.items.length" description="该模块数据项待补充"></el-empty>
+</div>
+<div class="navrail">
+<div class="navrail-list">
+<el-tooltip v-for="(it,ii) in curModule.items" :key="it.k" :content="(curIndex+1)+'.'+(ii+1)+'. '+it.t" placement="left" :open-delay="200"><div class="navdot" :class="{hit:navHit===it.k}" @click="navTo(it)"></div></el-tooltip>
+</div>
+<el-tooltip content="返回顶部" placement="left" :open-delay="200"><div class="navtop" @click="navTop"><i class="el-icon-arrow-up"></i></div></el-tooltip>
+</div>
+</div>
+</div>
+<el-dialog :close-on-click-modal="false" title="编辑内容" :visible.sync="editDlg" :fullscreen="editFull" width="560px" top="8vh" custom-class="prd-edit-dlg">
+<el-button type="text" @click="editFull=!editFull" :title="editFull?'退出全屏':'全屏'" style="position:absolute;top:18px;right:48px;font-size:16px;color:#909399;padding:0"><i :class="editFull?'el-icon-copy-document':'el-icon-full-screen'"></i></el-button>
+<el-form label-width="80px" size="small">
+<el-form-item label="数据项名称"><el-input size="small" v-model="editName" placeholder="卡片名称，改这里即可重命名卡片"></el-input></el-form-item>
+<el-form-item :label="editTitle"><el-input type="textarea" :rows="8" v-model="editContent" placeholder="填写该数据项的PRD正文"></el-input></el-form-item>
+<el-form-item label="表格">
+<el-button size="mini" type="primary" plain @click="addTable">添加表格</el-button>
+<div v-for="(t,ti) in editTables" :key="ti" style="margin-top:10px;border:1px solid #ebeef5;border-radius:4px;padding:8px">
+<div style="margin-bottom:6px;display:flex;align-items:center"><span style="flex:none;width:70px;font-size:13px;color:#606266">表格名称</span><el-input size="mini" v-model="t.name" placeholder="请输入表格名称" style="flex:1"></el-input></div>
+<div style="margin-bottom:6px;display:flex;align-items:center"><span style="flex:none;width:70px;font-size:13px;color:#606266">所属卡片</span><el-select size="mini" v-model="t.pos" style="flex:1"><el-option label="数据项卡" value="main"></el-option></el-select></div>
+<div><el-button size="mini" @click="addRow(t)">加一行</el-button><el-button size="mini" @click="addCol(t)">加一列</el-button><el-button size="mini" type="danger" plain @click="editTables.splice(ti,1)">删除表格</el-button></div>
+<table style="width:100%;border-collapse:collapse">
+<tr><td style="width:30px"></td><td v-for="(c,ci) in t.cols" :key="ci" style="border:1px solid #ebeef5;padding:2px"><el-input size="mini" v-model="t.cols[ci]" placeholder="列名"></el-input><el-button type="text" size="mini" @click="delCol(t,ci)">删列</el-button></td></tr>
+<tr v-for="(r,ri) in t.rows" :key="ri"><td style="border:1px solid #ebeef5;text-align:center"><el-button type="text" size="mini" @click="t.rows.splice(ri,1)">删行</el-button></td><td v-for="(cell,ci) in r" :key="ci" style="border:1px solid #ebeef5;padding:2px"><el-input size="mini" v-model="r[ci]" placeholder="单元格"></el-input></td></tr>
+</table>
+</div>
+</el-form-item>
+</el-form>
+<div slot="footer"><el-button size="small" @click="editDlg=false">取消</el-button><el-button size="small" type="primary" @click="saveEdit">保存</el-button></div>
+</el-dialog>
+<el-dialog :close-on-click-modal="false" :title="histTitle+' - 历史需求内容'" :visible.sync="histDlg" width="600px">
+<el-timeline v-if="histList.length">
+<el-timeline-item v-for="(h,i) in histList" :key="i" :timestamp="h.date" placement="top">
+<el-card shadow="never" style="font-size:13px;color:#606266"><el-tag size="mini" :type="h.label&&h.label.indexOf('首次')>=0?'success':'info'" style="margin-bottom:8px">{{h.label||'历史版本'}}</el-tag><div v-html="renderDoc(h.content||'')"></div>
+<div v-if="h.tables&&h.tables.length" style="margin-top:8px">
+<div v-for="(t,ti) in h.tables" :key="ti" style="margin-bottom:8px">
+<div v-if="t.name" style="font-weight:700;color:#606266;margin-bottom:4px">{{t.name}}</div>
+<el-table :data="t.rows" border size="mini"><el-table-column v-for="(c,ci) in t.cols" :key="ci" :label="c||('列'+(ci+1))"><template slot-scope="s">{{s.row[ci]}}</template></el-table-column></el-table>
+</div>
+</div>
+</el-card>
+</el-timeline-item>
+</el-timeline>
+<el-empty v-else description="暂无历史需求记录"></el-empty>
+</el-dialog>
+<el-dialog :close-on-click-modal="false" title="评审修改" :visible.sync="dlg" width="520px"><el-form label-width="110px" size="small">
+<el-form-item label="评审阶段"><el-select v-model="form.stage" style="width:100%"><el-option label="内部评审" value="内部评审"></el-option><el-option label="技术评审" value="技术评审"></el-option><el-option label="开发评审" value="开发评审"></el-option></el-select></el-form-item>
+<el-form-item label="评审参与人员"><el-input v-model="form.users" placeholder="如：张三、李四"></el-input></el-form-item>
+<el-form-item label="评审修改内容"><el-input type="textarea" :rows="5" v-model="form.content" placeholder="本次评审提出的具体修改"></el-input><div style="font-size:12px;color:#909399;margin-top:2px">此处仅记录评审意见/结论；PRD正文请用数据项上的「编辑」维护。</div></el-form-item>
+</el-form>
+<div slot="footer"><el-button size="small" @click="dlg=false">取消</el-button><el-button size="small" type="primary" @click="saveReview">保存</el-button></div>
+</el-dialog>
+<el-dialog :close-on-click-modal="false" title="新增模块" :visible.sync="newModDlg" width="420px">
+<el-form label-width="90px" size="small"><el-form-item label="模块名称"><el-input v-model="newModName" placeholder="如：全局" @keyup.enter.native="saveNewMod"></el-input></el-form-item></el-form>
+<div slot="footer"><el-button size="small" @click="newModDlg=false">取消</el-button><el-button size="small" type="primary" @click="saveNewMod">新增</el-button></div>
+</el-dialog>
+<el-dialog :close-on-click-modal="false" title="历史需求总览" :visible.sync="clDlg" width="92%" custom-class="rv-dlg" top="5vh">
+<div class="rv-bar">
+<el-select v-model="clMod" size="small" clearable placeholder="全部模块" style="width:200px">
+<el-option v-for="m in modules" :key="m.key" :label="m.name" :value="m.key"></el-option>
+</el-select>
+<el-select v-model="clType" size="small" clearable placeholder="全部操作" style="width:150px">
+<el-option v-for="t in clTypes" :key="t.v" :label="t.l" :value="t.v"></el-option>
+</el-select>
+<el-input v-model="clKw" size="small" clearable placeholder="搜索卡片 / 修改内容" style="width:220px"></el-input>
+<el-button size="small" @click="clMod='';clType='';clKw=''">重置</el-button>
+<span style="flex:1"></span>
+<span class="rv-stats">共 {{clList.length}} 条历史需求记录</span>
+</div>
+<div class="cl-tl">
+<el-timeline v-if="clList.length">
+<el-timeline-item v-for="h in clList" :key="h.id" :timestamp="h.t" placement="top">
+<el-card shadow="never" style="font-size:13px;color:#606266">
+<el-tag size="mini" :type="h.tagType">{{h.op}}</el-tag>
+<span style="margin-left:8px;font-size:12px;color:#909399">{{h.modName||'-'}} / </span><span :class="h.cardGone?'rv-row-del':'rv-no'" :title="h.cardGone?'该卡片已删除，无法定位':'点击定位到 '+(h.no||'')+' '+(h.cardName||'')" @click="clLocate(h)">{{h.no?h.no+' ':''}}{{h.cardName||'-'}}</span>
+<div v-if="h.detail" style="font-size:12px;color:#909399;margin-top:4px">{{h.detail}}</div>
+<div v-html="renderDoc(h.content||'')" style="margin-top:8px"></div>
+<div v-if="h.tables&&h.tables.length" style="margin-top:8px">
+<div v-for="(t,ti) in h.tables" :key="ti" style="margin-bottom:8px">
+<div v-if="t.name" style="font-weight:700;color:#606266;margin-bottom:4px">{{t.name}}</div>
+<el-table :data="t.rows" border size="mini"><el-table-column v-for="(c,ci) in t.cols" :key="ci" :label="c||('列'+(ci+1))"><template slot-scope="s">{{s.row[ci]}}</template></el-table-column></el-table>
+</div>
+</div>
+</el-card>
+</el-timeline-item>
+</el-timeline>
+<el-empty v-else description="暂无历史需求记录"></el-empty>
+</div>
+<div class="cl-tip">记录自本功能上线后的操作开始；更早的修改请看每张卡片里的「历史需求」。删除卡片时会留下一条记录，被删的内容仍可回看。</div>
+</el-dialog>
+<el-dialog :close-on-click-modal="false" title="评审记录总览" :visible.sync="rvDlg" width="92%" custom-class="rv-dlg" top="5vh">
+<div class="rv-bar">
+<el-select v-model="rvMod" size="small" clearable placeholder="全部模块" style="width:200px">
+<el-option v-for="m in modules" :key="m.key" :label="m.name" :value="m.key"></el-option>
+</el-select>
+<el-select v-model="rvStage" size="small" clearable placeholder="全部阶段" style="width:140px">
+<el-option label="内部评审" value="内部评审"></el-option>
+<el-option label="技术评审" value="技术评审"></el-option>
+<el-option label="开发评审" value="开发评审"></el-option>
+</el-select>
+<el-input v-model="rvKw" size="small" clearable placeholder="搜索评审意见 / 参与人" style="width:220px"></el-input>
+<el-button size="small" @click="rvMod='';rvStage='';rvKw=''">重置</el-button>
+<span style="flex:1"></span>
+<span class="rv-stats">共 {{rvList.length}} 条评审记录</span>
+</div>
+<el-table :data="rvList" border size="mini" :row-class-name="rvRowClass" :max-height="rvTblH" style="width:100%">
+<el-table-column label="序号" min-width="52"><template slot-scope="s"><span v-if="s.row.no" class="rv-no" :title="'点击定位到 '+s.row.no" @click="rvLocate(s.row)">{{s.row.no}}</span><span v-else class="rv-row-del">-</span></template></el-table-column>
+<el-table-column label="模块" min-width="112"><template slot-scope="s"><span class="rv-row-mod">{{s.row.modName}}</span></template></el-table-column>
+<el-table-column label="卡片" min-width="112"><template slot-scope="s"><span :class="s.row.cardName==='（卡片已删除）'?'rv-row-del':'rv-row-card'">{{s.row.cardName}}</span></template></el-table-column>
+<el-table-column label="阶段" width="90"><template slot-scope="s"><el-tag size="mini" :type="rvStageType(s.row.rec.stage)">{{s.row.rec.stage}}</el-tag></template></el-table-column>
+<el-table-column label="处理标记" width="148"><template slot-scope="s"><el-tag size="mini" :type="rvStType(s.row.rec)">{{rvStatusOf(s.row.rec)}}</el-tag><div v-if="rvStatusOf(s.row.rec)==='不予修改'" style="margin-top:4px;color:#b88230;white-space:pre-wrap;font-size:12px">不修改理由：{{s.row.rec.rsn||'（未填写）'}}</div></template></el-table-column>
+<el-table-column label="评审意见" min-width="148"><template slot-scope="s"><span style="white-space:pre-wrap">{{s.row.rec.content}}</span></template></el-table-column>
+<el-table-column label="参与人" width="72"><template slot-scope="s">{{s.row.rec.users}}</template></el-table-column>
+<el-table-column label="时间" width="124"><template slot-scope="s">{{rvDateText(s.row.rec)}}</template></el-table-column>
+</el-table>
+<el-empty v-if="!rvList.length" description="暂无评审记录"></el-empty>
+</el-dialog>
+<el-dialog title="已删除（可恢复）" :visible.sync="delDlg" width="760px" top="8vh">
+<div class="rv-bar">
+<span class="rv-stats">共 {{deleted.length}} 项：模块 {{delMods.length}} 个、数据项 {{delItems.length}} 张</span>
+<span style="flex:1"></span>
+<el-button size="small" type="danger" plain @click="restoreAllDel">全部恢复</el-button>
+</div>
+<el-table :data="delList" border size="mini" max-height="400">
+<el-table-column label="类型" width="80"><template slot-scope="s"><el-tag size="mini" :type="s.row.isMod?'danger':'info'">{{s.row.isMod?'模块':'数据项'}}</el-tag></template></el-table-column>
+<el-table-column label="所属模块" min-width="150"><template slot-scope="s">{{s.row.modName}}</template></el-table-column>
+<el-table-column label="名称" min-width="200"><template slot-scope="s"><span :class="s.row.isMod?'rv-row-card':''">{{s.row.name}}</span><span v-if="s.row.isMod" style="font-size:12px;color:#909399;margin-left:6px">（含 {{s.row.cardCount}} 张卡一并恢复）</span></template></el-table-column>
+<el-table-column label="操作" width="110"><template slot-scope="s"><el-button size="mini" type="primary" plain @click="restoreDel(s.row)">{{s.row.isMod?'恢复模块':'恢复'}}</el-button></template></el-table-column>
+</el-table>
+<div class="cl-tip">恢复后页面会自动刷新；正文、表格、评审记录与历史需求都按最近一次保存的状态回来。恢复模块会连同该模块下所有被删的卡片一起恢复，本地新建过的卡片会按「历史需求」找回最近一版正文。</div>
+</el-dialog>
+<el-dialog :close-on-click-modal="false" title="填写不修改理由" :visible.sync="rsnDlg" width="520px">
+<el-form label-width="100px" size="small">
+<el-form-item label="评审意见">
+<div style="font-size:13px;color:#606266;white-space:pre-wrap;background:#f5f7fa;border-radius:4px;padding:8px;max-height:140px;overflow:auto">{{rsnContent}}</div>
+</el-form-item>
+<el-form-item label="不修改理由">
+<el-input type="textarea" :rows="4" v-model="rsnText" placeholder="请说明为什么不修改（必填）"></el-input>
+</el-form-item>
+</el-form>
+<div slot="footer"><el-button size="small" @click="rsnDlg=false">取消</el-button><el-button size="small" type="primary" @click="saveRsn">保存</el-button></div>
+</el-dialog>
+<el-dialog :close-on-click-modal="false" title="修改模块名称" :visible.sync="editModDlg" width="420px">
+<el-form label-width="90px" size="small"><el-form-item label="模块名称"><el-input v-model="editModName" placeholder="请输入模块名称" @keyup.enter.native="saveEditMod"></el-input></el-form-item></el-form>
+<div slot="footer"><el-button size="small" @click="editModDlg=false">取消</el-button><el-button size="small" type="primary" @click="saveEditMod">保存</el-button></div>
+</el-dialog>
+<el-dialog :close-on-click-modal="false" title="新增数据项" :visible.sync="newDlg" width="420px">
+<el-form label-width="90px" size="small"><el-form-item label="数据项名称"><el-input v-model="newName" placeholder="如：企业总量" @keyup.enter.native="saveNewItem"></el-input></el-form-item></el-form>
+<div slot="footer"><el-button size="small" @click="newDlg=false">取消</el-button><el-button size="small" type="primary" @click="saveNewItem">新增</el-button></div>
+</el-dialog>
+<el-dialog :close-on-click-modal="false" title="归档确认" :visible.sync="archDlg" width="440px">
+<div style="font-size:14px;line-height:1.8">确认归档吗？<br>确认后将在当前文件所在位置生成一个新的只读PRD文档（带归档时间戳），用于交付。当前编辑页不受影响。</div>
+<div slot="footer"><el-button size="small" @click="archDlg=false">取消</el-button><el-button size="small" type="primary" @click="doArchive">确认归档</el-button></div>
+</el-dialog>
+</div>
+<script>/* 本页内嵌数据：随文件复制到任何位置都不丢；日常编辑自动存浏览器暂存，点左下「保存文件」下载含最新数据的新文件覆盖本文件即可落盘 */
+window.PRD_DATA={
+ "version": 34,
+ "modules": [],
+ "contents": {},
+ "reviews": {},
+ "mtimes": {},
+ "hists": {},
+ "changelog": {},
+ "tables": {},
+ "deleted": [],
+ "exported": "2026-10-21 19:42:44"
+};
+window.PRD_DATA_INLINE=window.PRD_DATA;
+</script>
+<script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script id="prd-app">
+/* ===== 正文渲染：把「搜索 / 列表 / 查看详情 / Tab」等内容渲染成表格 ===== */
+function prdEsc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+var PRD_SEC_KEY=/搜索|列表|查看|详情|明细|弹框|字段|子项|组成|岗位类型|图层层级|选项|类型|Tab/;
+/* 这些短标题作为「项」并入同一张表，不单独起表 */
+var PRD_ROW_CAP=/^(搜索|列表|分页|查看|操作|排序|说明|注|口径|备注|来源)$/;
+function prdSplit(line){
+  var t=String(line).replace(/^\s*[·\-*•]\s*/,"").trim();
+  var cap="",rest=t,hasPipe=t.indexOf("｜")>=0;
+  if(hasPipe){
+    var i=t.indexOf("｜"),head=t.slice(0,i),hm=head.match(/^(.{1,40})[：:]\s*$/);
+    if(hm)cap=hm[1].trim();
+    rest=t.slice(i+1);
+  }else{
+    var m=t.match(/^(.{1,40})[：:]\s*([\s\S]*)$/);
+    if(m){cap=m[1].trim();rest=m[2];}
+  }
+  var parts=(hasPipe?rest.split("｜"):rest.split(/[、,，]/)).map(function(x){return x.trim()}).filter(Boolean);
+  return {cap:cap,parts:parts,hasPipe:hasPipe,raw:rest.trim()};
+}
+function prdField(p){
+  var m=String(p).match(/^(.*?)[（(]([^）)]+)[）)]\s*([\s\S]*)$/);
+  if(m)return {name:m[1].trim(),unit:m[2].trim(),note:m[3].replace(/^[；;，,、\s]+/,"").trim()};
+  return {name:String(p).trim(),unit:"",note:""};
+}
+function prdTableHTML(title,rows,head){
+  if(!rows.length)return "";
+  var h='<div class="prd-tblwrap">'+(title?'<div class="prd-cap">'+prdEsc(title)+'</div>':"");
+  h+='<table class="prd-tbl"><thead><tr><th style="width:46px">'+prdEsc(head[0])+'</th><th>'+prdEsc(head[1])+'</th><th>'+prdEsc(head[2])+'</th></tr></thead><tbody>';
+  rows.forEach(function(r,i){
+    h+='<tr><td class="prd-idx">'+(r[0]||(i+1))+'</td><td>'+prdEsc(r[1])+'</td><td>'+prdEsc(r[2])+'</td></tr>';
+  });
+  return h+"</tbody></table></div>";
+}
+function prdFieldsHTML(lines,mode){
+  var groups=[],cur=null;
+  function nt(t){cur={title:t||"",rows:[]};groups.push(cur);return cur}
+  lines.forEach(function(raw){
+    var t=String(raw).trim();
+    if(!t)return;
+    var nested=/^\s*[-*•]/.test(raw)||/^\s{2,}/.test(raw);
+    var sp=prdSplit(t);
+    if(mode==="tab"){
+      if(!cur)nt("");
+      if(sp.cap)cur.rows.push(["",sp.cap,sp.parts.join("、")]);
+      else cur.rows.push(["",sp.parts[0]||t,""]);
+      return;
+    }
+    if(!sp.cap&&sp.parts.length<=1){
+      if(cur&&(nested||cur.rows.length)){ cur.rows.push(["",sp.parts[0]||t,""]); return; }
+      if(cur&&!cur.rows.length&&!cur.title){ cur.title=sp.parts[0]||t; return; }
+      nt(sp.parts[0]||t); return;
+    }
+    if(sp.cap&&sp.parts.length<=1){ if(!cur)nt(""); cur.rows.push(["",sp.cap,sp.raw]); return; }
+    if(sp.cap&&!PRD_ROW_CAP.test(sp.cap))nt(sp.cap); else if(!cur)nt("");
+    sp.parts.forEach(function(p){
+      var f=prdField(p);
+      cur.rows.push(["",f.name,[f.unit?"单位："+f.unit:"",f.note].filter(Boolean).join("　")]);
+    });
+  });
+  var html="";
+  groups.forEach(function(g,i){
+    if(g.rows.length)html+=prdTableHTML(g.title,g.rows,["序号","字段","单位/说明"]);
+    else if(g.title&&i<groups.length-1)html+='<div class="prd-cap">'+prdEsc(g.title)+"</div>";
+  });
+  return html;
+}
+function prdParaHTML(lines){
+  var html="";
+  lines.forEach(function(raw){
+    var t=String(raw).replace(/\s+$/,"");
+    if(!t.trim())return;
+    if(/^\s*[·\-*•]\s*/.test(t)) html+='<div class="prd-li">· '+prdEsc(t.trim().replace(/^[·\-*•]\s*/,""))+"</div>";
+    else html+='<div class="prd-p">'+prdEsc(t.trim())+"</div>";
+  });
+  return html;
+}
+function prdIsHeading(t){return /^【/.test(t)||/^[一二三四五六七八九十]+[、.]/.test(t)||/^[0-9]+[、.]/.test(t)}
+/* 标题归属：列表与弹框 / 详情 / 数据项主体 */
+function prdClassifyHead(head){
+  var m=head.match(/^【([^】]*)】/);
+  var t=(m?m[1]:head)+"";
+  if(/Tab|搜索|列表|分页|弹框|图层层级|选项|筛选|明细|字段/.test(t))return "popup";
+  if(/查看|详情/.test(t))return "detail";
+  return "main";
+}
+/* 把正文按行分到三块：main（数据项口径）、popup（列表与弹框）、detail（详情） */
+function prdBuckets(text){
+  var lines=String(text==null?"":text).split("\n");
+  var out={main:[],popup:[],detail:[]},cur="main",detailRun=false,headCtx="",lastCap="";
+  lines.forEach(function(raw){
+    var t=raw.replace(/\s+$/,"");
+    if(!t.trim())return;
+    var s=t.trim();
+    if(prdIsHeading(s)){
+      var hm=s.match(/^【([^】]*)】/);
+      if(hm)headCtx=hm[1];
+      lastCap="";
+      cur=prdClassifyHead(s);detailRun=false;
+      if(cur==="detail"&&/^【查看[^】]*】\s*$/.test(s))return;
+      out[cur].push(s);return;
+    }
+    var nested=/^\s{2,}/.test(raw)||/^\s*[-*]\s/.test(raw);
+    var isOp=/^\s*[·\-*]?\s*操作/.test(s);
+    var target;
+    if(isOp){
+      target="detail";detailRun=true;
+      /* 详情字段带上文（所在分组或所属明细小节），避免多张表标题重复 */
+      var px=lastCap||((headCtx&&!/^查看(详情|明细)$/.test(headCtx))?headCtx:"");
+      if(/^(搜索|列表|分页|查看|操作|排序|说明|注|口径|备注|来源|Tab项)$/.test(px))px=(headCtx&&!/^查看(详情|明细)$/.test(headCtx))?headCtx:"";
+      if(px)t="· "+px+" / "+s.replace(/^\s*[·\-*]?\s*/,"");
+    }
+    else if(detailRun&&nested){target="detail"}
+    else{target=cur;detailRun=false}
+    if(target!=="detail")lastCap=prdSplit(t).cap||"";
+    if(target==="detail"&&/^【查看[^】]*】\s*$/.test(s))return;
+    out[target].push(t);
+  });
+  /* 去掉没有实质内容的标题（后面没有正文就跟下一个标题/结束）；带内联取值的元信息行保留 */
+  ["main","popup","detail"].forEach(function(k){
+    var a=out[k],r=[];
+    for(var i=0;i<a.length;i++){
+      var line=a[i],t=line.trim();
+      if(prdIsHeading(t)&&!/^【[^】]+】\s*\S+/.test(t)){
+        var j=i+1,has=false;
+        while(j<a.length){if(!prdIsHeading(a[j].trim())){has=true;break}j++}
+        if(!has)continue;
+      }
+      r.push(line);
+    }
+    out[k]=r;
+  });
+  return out;
+}
+function prdRender(text){
+  return prdRenderLines(String(text==null?"":text).split("\n"));
+}
+function prdBlock(text,which){
+  var b=prdBuckets(text);
+  if(!b||!b[which]||!b[which].length)return "";
+  return prdRenderLines(b[which],which==="main"?"auto":"fields");
+}
+function prdRenderLines(lines,defMode){
+  var html="",sec=null,buf=[];
+  function flush(){
+    if(sec===null&&!buf.length)return;
+    var title=sec===null?"":sec;
+    var mode=sec===null?(defMode==="fields"?"fields":"auto"):(/Tab/i.test(title)?"tab":(PRD_SEC_KEY.test(title)?"fields":"para"));
+    if(mode==="para")html+=prdParaHTML(buf);
+    else if(mode==="auto")html+=prdParaHTML(buf);
+    else html+=prdFieldsHTML(buf,mode);
+    sec=null;buf=[];
+  }
+  lines.forEach(function(raw){
+    var t=raw.replace(/\s+$/,"");
+    if(!t.trim())return;
+    var hm=t.trim().match(/^【([^】]+)】\s*([\s\S]*)$/);
+    if(hm){
+      if(PRD_SEC_KEY.test(hm[1])){flush();html+='<div class="prd-h">'+prdEsc(t.trim())+"</div>";sec=hm[1]+(hm[2]?" "+hm[2]:"");return}
+      flush();html+='<div class="prd-meta"><span class="k">'+prdEsc(hm[1])+"</span>"+prdEsc(hm[2]||"")+"</div>";return;
+    }
+    if(/^[一二三四五六七八九十]+[、.]/.test(t.trim())||/^[0-9]+[、.]/.test(t.trim())){
+      flush();html+='<div class="prd-h">'+prdEsc(t.trim())+"</div>";sec=t.trim();return;
+    }
+    buf.push(t);
+  });
+  flush();
+  return html;
+}
+/* 页面未渲染前的原始模板与自身源码，用于「数据写回本页」时原样重建文件 */
+
+var PRD_APP_TPL="",PRD_APP_SRC="";
+try{var _ae=document.getElementById("app");if(_ae)PRD_APP_TPL=_ae.outerHTML}catch(e){}
+try{var _pe=document.getElementById("prd-app");if(_pe)PRD_APP_SRC=_pe.textContent}catch(e){}
+/* 数据来源三方取新：本页内嵌数据 / 同目录数据文件 / 浏览器暂存，谁新用谁，换路径不丢 */
+function ldTs(s){if(!s)return 0;var t=Date.parse(String(s).replace(/-/g,"/"));return isNaN(t)?0:t}
+var INLINE=window.PRD_DATA_INLINE||{},FILE=window.PRD_DATA||{};
+var SEED=ldTs(INLINE.exported)>=ldTs(FILE.exported)?INLINE:FILE;
+/* ===== 存储命名空间：按本文件所在路径派生（模板复用机制的核心） =====
+   浏览器里所有 file:// 页面共用同一份 localStorage。若用固定前缀，把本模板复制到别的
+   目录会读到上一份的缓存，看起来"明明清空了却还有数据"。改为按文件路径派生独立前缀后：
+     · 复制到别的目录 = 新路径 = 新命名空间 = 全新空白文档，绝不继承任何旧内容
+     · 同一路径反复打开 = 同一命名空间 = 正在编辑的内容照常保留
+     · 内容要跟着文件走，就用「保存文件」把数据写进 HTML 自身（复制文件即带内容）
+*/
+var NS=(function(){
+var p="";try{p=decodeURIComponent(location.pathname||"")}catch(e){p=location.pathname||""}
+p=String(p).replace(/\\/g,"/").toLowerCase();
+var h=2166136261;
+for(var i=0;i<p.length;i++){h^=p.charCodeAt(i);h=(h*16777619)>>>0}
+return "cockpit-"+"prd-"+("0000000"+h.toString(36)).slice(-7)+"-";
+})();
+/* ===== 文档身份校验 =====
+   同一路径反复打开＝同一篇文档，保留暂存；若这个路径被换成了另一份文件
+   （例如拿空白模板覆盖写过的稿子），旧暂存必须作废，否则又会"清空了却有数据"。
+   判定依据是 HTML 里自带的 docId：只有「保存文件」时才会写进去。
+     · 文件没有 docId（空白模板）+ 本地有 docId → 文件被换成了模板 → 清空本地
+     · 文件有 docId 且与本地不一致 → 换成了别的稿子 → 清空本地
+     · 两边一致，或本地还没有 docId（只是编辑未保存）→ 正常合并，不清
+   想彻底重来一份：把文件复制或改名（路径变了就是全新空白文档）。
+*/
+var DOC_ID=(function(){
+var f=String(SEED.docId||"").trim(),loc=null;
+try{loc=localStorage.getItem(NS+"docid")}catch(e){}
+try{
+if(loc!==null&&loc!==f){
+var gone=0;
+for(var i=localStorage.length-1;i>=0;i--){var k=localStorage.key(i);if(k&&k.indexOf(NS)===0){localStorage.removeItem(k);gone++}}
+if(gone&&window.console)console.log("[重置] 本文件内容已变更，清除该路径旧暂存 "+gone+" 项");
+loc=null;
+}
+if(!loc&&f){localStorage.setItem(NS+"docid",f);loc=f}
+}catch(e){}
+return loc||f||"";
+})();
+/* ===== 一次性接管：本文件搬过家，把原位置的浏览器暂存接过来 =====
+   存储前缀按完整路径派生，路径一变就换命名空间。只挪文件不做这件事，
+   你在原路径下的编辑会"看起来消失"（数据还在旧前缀里，只是没人读了）。
+   这里在首次打开时把旧前缀整组接过来，只接一次，接完就与原位置彻底独立。
+*/
+(function(){
+try{
+var OLD_NS="cockpit-prd-08p3q3w-";
+if(!OLD_NS||OLD_NS===NS)return;
+if(localStorage.getItem(NS+"ts"))return;
+if(!localStorage.getItem(OLD_NS+"ts"))return;
+var ks=["modules","contents","reviews","mtimes","hists","changelog","tables","deleted","keyts","ts","ver","modts","docid","title"];
+var got=0;
+for(var i=0;i<ks.length;i++){
+var v=null;try{v=localStorage.getItem(OLD_NS+ks[i])}catch(e){}
+if(v!=null&&v!==""){try{localStorage.setItem(NS+ks[i],v);got++}catch(e){}}
+}
+if(got&&window.console)console.log("[搬家接管] 已从旧位置 "+OLD_NS+" 接管浏览器暂存 "+got+" 项");
+}catch(e){}
+})();
+/* 默认文档名：取本文件所在文件夹名（复制到「应急管理驾驶舱」等目录自动变成「应急管理驾驶舱 · PRD」） */
+var DIR_NAME=(function(){try{var p=decodeURIComponent(location.pathname||"").replace(/\\/g,"/");var a=p.split("/").filter(Boolean);return a.length>1?a[a.length-2]:""}catch(e){return ""}})();
+/* 左上「对应页面」链接指向的文件名：默认同目录 <文件夹名>.html；目录里的页面若叫别的名字，改这一行即可 */
+var HOME_PAGE_NAME=DIR_NAME+".html";
+/* 文档标题：可在页面上直接改，改完同步浏览器标签页；默认沿用原 H1 / 标签页文案 */
+var DOC_H1_DEFAULT=DIR_NAME?(DIR_NAME+" · PRD"):"PRD 文档";
+var DOC_HEAD_DEFAULT=DIR_NAME?(DIR_NAME+"-PRD文档"):"PRD文档";
+var _savedTitle="";try{_savedTitle=(localStorage.getItem(NS+"title")||"").trim()}catch(e){}
+var docTitle=_savedTitle||String(SEED.title||"").trim()||DOC_H1_DEFAULT;
+var titleCustom=!!(_savedTitle||String(SEED.title||"").trim());
+try{if(!titleCustom)document.title=DOC_HEAD_DEFAULT}catch(e){}
+var fileTs=ldTs(SEED.exported);
+var localTs=0,localVer=0;
+try{localTs=Number(localStorage.getItem(NS+"ts")||0)||0;localVer=Number(localStorage.getItem(NS+"ver")||0)||0}catch(e){}
+/* 本页数据版本高于浏览器暂存版本时，一律以本页内嵌数据为准（内容修订后强制生效） */
+var SEED_VER=Number(SEED.version||0)||0;
+/* 合并策略（2026-10-16起）：文件为底，浏览器暂存按“后写为准”逐键覆盖。
+   版本号只做展示，不再清空暂存；比较依据是每键时间戳（文件侧 keyts / 本地 KEYTS），互不覆盖。 */
+function ldKeyTs(){try{return JSON.parse(localStorage.getItem(NS+"keyts")||"{}")}catch(e){return{}}}
+var KEYTS=ldKeyTs();
+(function(){
+if(localStorage.getItem(NS+"keyts"))return;
+var _lts=Number(localStorage.getItem(NS+"ts")||0)||0;
+if(!_lts)return;
+var _back={};
+var _names=["contents","tables","mtimes","hists","reviews"];
+for(var _ni=0;_ni<_names.length;_ni++){
+var _o=null;
+try{_o=JSON.parse(localStorage.getItem(NS+""+_names[_ni])||"{}")}catch(_e){_o=null}
+if(!_o)continue;
+for(var _k in _o){_back[_k]=_lts}
+}
+try{localStorage.setItem(NS+"keyts",JSON.stringify(_back))}catch(_e){}
+KEYTS=_back;
+})();
+function touchKeys(keys){try{var t=Date.now();keys.forEach(function(k){KEYTS[k]=t});localStorage.setItem(NS+"keyts",JSON.stringify(KEYTS))}catch(e){}}
+/* 评审记录时间：剥离历史遗留的重复「（已修改）」后缀（独立函数，Vue 挂载前即可用） */
+function rvBaseDate(s){return String(s||"").replace(/（已修改[^）]*）/g,"").trim()}
+/* 历史需求总览里「操作」标签的颜色 */
+function clTagType(t){return t==="add"?"success":(t==="del"?"danger":(t==="clear"?"warning":(t==="edit"?"":"info")))}
+function ldLocal(name){try{var s=localStorage.getItem(NS+""+name);if(s)return JSON.parse(s)}catch(e){}return null}
+/* 文件侧某键的最后修改时间：keyts 有记用记的，没有回退到文件导出时间 */
+function fileKeyTs(k){try{if(SEED.keyts&&SEED.keyts[k])return Number(SEED.keyts[k])||0}catch(e){}return fileTs}
+function ldMerge(name){
+var base={};try{if(SEED[name])base=JSON.parse(JSON.stringify(SEED[name]))}catch(e){}
+var loc=ldLocal(name);if(!loc)return base;
+Object.keys(loc).forEach(function(k){if((KEYTS[k]||0)>=fileKeyTs(k))base[k]=loc[k]});
+return base;
+}
+function markTs(){try{localStorage.setItem(NS+"ts",String(Date.now()));localStorage.setItem(NS+"ver",String(SEED_VER))}catch(e){}}
+function persistModules(){try{localStorage.setItem(NS+"modules",JSON.stringify(window.__prdVM?window.__prdVM.modules:MODULES));localStorage.setItem(NS+"modts",String(Date.now()))}catch(e){}markTs()}
+/* ===== 数据持久化：浏览器暂存（自动）＋ 保存文件按钮（手动落盘） ===== */
+/* 兜底骨架：仅提供模块目录；各数据项与内容以本页内嵌数据 window.PRD_DATA.modules 为准 */
+var MODULES=[];
+/* 数据文件里的 modules 若存在则整体覆盖（含正文与结构），保证换路径后内容仍在；
+   modules 为空数组时同样覆盖，用于正式版清空成空白文档 */
+if(SEED.modules)MODULES=SEED.modules;
+/* 本地结构快照时间：模块名/卡片顺序恢复的依据 */
+var modts=0;try{modts=Number(localStorage.getItem(NS+"modts")||0)||0}catch(e){}
+/* 模块结构合并：本地新增的模块/数据项合并进来（按 key 去重），已删除的不再出现 */
+(function(){
+var locMods=ldLocal("modules");if(!locMods||!locMods.length)return;
+var del=unionDeleted();
+var byKey={};MODULES.forEach(function(m){byKey[m.key]=m});
+var locByKey={};locMods.forEach(function(lm){var arr=[];(lm.items||[]).forEach(function(it){arr.push(it.k)});locByKey[lm.key]=arr});
+locMods.forEach(function(lm){
+if(del.indexOf("mod:"+lm.key)>=0)return;
+var fm=byKey[lm.key];
+if(!fm){MODULES.push(JSON.parse(JSON.stringify(lm)));byKey[lm.key]=MODULES[MODULES.length-1];return}
+var fkeys={};fm.items.forEach(function(it){fkeys[it.k]=1});
+(lm.items||[]).forEach(function(lit){
+if(del.indexOf(lit.k)>=0||fkeys[lit.k])return;
+fm.items.push({k:lit.k,t:lit.t,d:""});
+});
+});
+/* 卡片顺序：本地排序快照新于文件时，按本地顺序重排；文件独有的卡缀在末尾 */
+if(modts>=fileTs){
+MODULES.forEach(function(m){
+var order=locByKey[m.key];if(!order||!order.length)return;
+var pos={},tail=order.length;
+order.forEach(function(k,i){if(!(k in pos))pos[k]=i});
+m.items.forEach(function(it){if(!(it.k in pos)){pos[it.k]=tail;tail++}});
+m.items.sort(function(a,b){return pos[a.k]-pos[b.k]});
+});
+}
+})();
+var reviews=ldMerge("reviews");
+/* 评审记录时间规范化：清理历史遗留的重复「（已修改）」后缀，只保留一个修改时间 */
+(function(){
+var dirty=false;
+Object.keys(reviews||{}).forEach(function(k){
+(reviews[k]||[]).forEach(function(r){
+if(!r)return;
+var base=rvBaseDate(r.date);
+if(base!==r.date){dirty=true;r.date=base;if(!r.mod){r.mod="";r.edited=true;}}
+if(r.mod===""){/* 遗留记录只知道被改过，不知道具体时间，保留空标记 */}
+});
+});
+if(dirty){try{localStorage.setItem(NS+"reviews",JSON.stringify(reviews))}catch(e){}}
+})();
+var mtimes=ldMerge("mtimes");
+var hists=ldMerge("hists");
+var tables=ldMerge("tables");
+/* 历史需求总览：所有修改操作（含删除卡片）都往这里写一条，按 id 合并文件与浏览器暂存 */
+var changelog={};
+(function(){
+[SEED.changelog,ldLocal("changelog")].forEach(function(o){
+if(!o)return;
+Object.keys(o).forEach(function(k){changelog[k]=o[k]});
+});
+})();
+function unionDeleted(){var o=[];try{(SEED.deleted||[]).concat(ldLocal("deleted")||[]).forEach(function(k){if(o.indexOf(k)<0)o.push(k)})}catch(e){}return o}
+var deleted=unionDeleted();
+/* 已删除的数据项/模块不再出现（即使文件里还有） */
+MODULES=MODULES.filter(function(m){return deleted.indexOf("mod:"+m.key)<0});
+MODULES.forEach(function(m){m.items=m.items.filter(function(it){return deleted.indexOf(it.k)<0})});
+/* 正文：先取合并后模块里的 d，再用文件/暂存里的 contents 按新旧覆盖；标题以后写者为准 */
+var contents={};
+MODULES.forEach(function(m){m.items.forEach(function(it){if(it.d)contents[it.k]=it.d})});
+var INIT_D=Object.assign({},contents);
+var savedContents=ldMerge("contents");
+Object.keys(savedContents).forEach(function(k){contents[k]=savedContents[k]});
+var locMods2=ldLocal("modules");
+if(locMods2){var lmByMod={};locMods2.forEach(function(lm){var ib={};(lm.items||[]).forEach(function(it){ib[it.k]=it.t});lmByMod[lm.key]=ib});
+/* 模块名：本地快照新于文件时用本地名称（改名后刷新仍保留） */
+var lmName={};locMods2.forEach(function(lm){lmName[lm.key]=lm.name});
+MODULES.forEach(function(m){if(lmName[m.key]&&lmName[m.key]!==m.name&&modts>=fileTs)m.name=lmName[m.key]});
+MODULES.forEach(function(m){var ib=lmByMod[m.key];if(!ib)return;m.items.forEach(function(it){if(ib[it.k]&&ib[it.k]!==it.t&&(KEYTS[it.k]||0)>=fileKeyTs(it.k))it.t=ib[it.k]})})}
+MODULES.forEach(function(m){m.items.forEach(function(it){if(contents[it.k])it.d=contents[it.k]})});
+var rOpenInit={};MODULES.forEach(function(m){m.items.forEach(function(it){rOpenInit[it.k]=true})});
+/* 历史记录修复：
+   1) 老逻辑保存时只写「改后内容」，最初新建时的正文看不到；
+   2) 从没改过的卡片历史是空的，同样回看不到最初内容。
+   这里为每张有正文的卡片补齐一条「首次创建内容」（初始取数据文件里的原文），补过不再重复。 */
+(function(){
+var fixed=false,keys={};
+Object.keys(INIT_D).forEach(function(k){keys[k]=1});
+Object.keys(contents).forEach(function(k){keys[k]=1});
+Object.keys(keys).forEach(function(k){
+if(deleted.indexOf(k)>=0)return;
+var init=INIT_D[k]||contents[k]||"";
+if(!String(init).trim())return;
+var list=hists[k];
+if(list&&list.length&&list.some(function(x){return x&&x.label==="首次创建内容"}))return;
+var neverEdited=!list||!list.length;
+if(!list)hists[k]=list=[];
+list.push({date:"初始版本",content:init,tables:neverEdited?JSON.parse(JSON.stringify(tables[k]||[])):[],label:"首次创建内容"});
+fixed=true;
+});
+if(fixed)localStorage.setItem(NS+"hists",JSON.stringify(hists));
+})();
+window.__prdVM=new Vue({el:"#app",data:{modules:MODULES,cur:MODULES.length?MODULES[0].key:"",reviews:reviews,contents:contents,mtimes:mtimes,hists:hists,tables:tables,changelog:changelog,docTitle:docTitle,titleCustom:titleCustom,titleEditing:false,titleDraft:"",clDlg:false,delDlg:false,clMod:"",clType:"",clKw:"",navHit:"",deleted:deleted,rOpen:rOpenInit,dlg:false,archDlg:false,editDlg:false,editFull:false,histDlg:false,histTitle:"",histList:[],editKey:"",editName:"",editTitle:"",editContent:"",editTables:[],newDlg:false,newName:"",newModDlg:false,newModName:"",editModDlg:false,editModName:"",editModKey:"",editModOld:"",rvDlg:false,rvMod:"",rvStage:"",rvKw:"",rvTblH:420,rsnDlg:false,rsnKey:"",rsnIdx:-1,rsnText:"",rsnContent:"",curKey:"",editIdx:-1,form:{stage:"内部评审",users:"",content:""}},
+computed:{homeFile(){return "./"+HOME_PAGE_NAME},homeFileLabel(){return HOME_PAGE_NAME},curModule(){return this.modules.filter(function(x){return x.key===this.cur},this)[0]||{key:"",name:"",items:[]}},
+curIndex(){return this.modules.findIndex(function(x){return x.key===this.cur},this)},
+/* 全量评审记录：把 reviews（按卡片 key 存）摊平，并反查所属模块/卡片名 */
+/* 全量评审记录：把 reviews（按卡片 key 存）摊平，并反查所属模块/卡片名 */
+rvAll(){
+var self=this,out=[],known={};
+this.modules.forEach(function(m,mi){
+(m.items||[]).forEach(function(it,ii){
+known[it.k]=1;
+var rs=self.reviews[it.k]||[];
+rs.forEach(function(r,i){out.push({modKey:m.key,modName:m.name,cardKey:it.k,cardName:it.t,no:(mi+1)+"."+(ii+1)+".",rec:r,idx:i})});
+});
+});
+/* 卡片已被删除的评审记录仍要能看到 */
+Object.keys(this.reviews||{}).forEach(function(k){
+if(known[k])return;
+(self.reviews[k]||[]).forEach(function(r,i){out.push({modKey:"",modName:"（模块已删除）",cardKey:"",cardName:"（卡片已删除）",no:"",rec:r,idx:i})});
+});
+out.sort(function(a,b){return rvBaseDate(b.rec.date).localeCompare(rvBaseDate(a.rec.date))});
+return out;
+},
+rvList(){
+var kw=(this.rvKw||"").trim().toLowerCase();
+return this.rvAll.filter(function(x){
+if(this.rvMod&&x.modKey!==this.rvMod)return false;
+if(this.rvStage&&x.rec.stage!==this.rvStage)return false;
+if(kw){
+var hay=(x.modName+" "+x.cardName+" "+(x.rec.users||"")+" "+(x.rec.content||"")+" "+(x.rec.rsn||"")).toLowerCase();
+if(hay.indexOf(kw)<0)return false;
+}
+return true;
+},this);
+},
+/* 已删除清单（模块 + 数据项），供「已删除（可恢复）」窗口使用 */
+delList(){
+var self=this,nameOf={},modOf={},modName={};
+(SEED.modules||[]).forEach(function(m){modName[m.key]=m.name;(m.items||[]).forEach(function(it){nameOf[it.k]=it.t;modOf[it.k]=m.key})});
+this.modules.forEach(function(m){modName[m.key]=modName[m.key]||m.name;(m.items||[]).forEach(function(it){nameOf[it.k]=nameOf[it.k]||it.t;modOf[it.k]=modOf[it.k]||m.key})});
+Object.keys(this.changelog||{}).forEach(function(id){
+var r=self.changelog[id]||{};
+if(r.cardKey&&r.cardName)nameOf[r.cardKey]=nameOf[r.cardKey]||r.cardName;
+if(r.modKey&&r.modName)modName[r.modKey]=modName[r.modKey]||r.modName;
+});
+var out=[];
+this.deleted.forEach(function(k){
+if(/^mod:/.test(k)){
+var mk=k.slice(4),cnt=0;
+(SEED.modules||[]).forEach(function(m){if(m.key!==mk)return;(m.items||[]).forEach(function(it){if(self.deleted.indexOf(it.k)>=0)cnt++})});
+out.push({raw:k,isMod:true,modKey:mk,modName:modName[mk]||mk,name:modName[mk]||mk,cardCount:cnt});
+}else{
+out.push({raw:k,isMod:false,modKey:modOf[k]||"",modName:modName[modOf[k]]||"（模块未知）",name:nameOf[k]||k});
+}
+});
+out.sort(function(a,b){return a.isMod===b.isMod?0:(a.isMod?-1:1)});
+return out;
+},
+delMods(){return this.delList.filter(function(x){return x.isMod})},
+delItems(){return this.delList.filter(function(x){return !x.isMod})},
+clTypes(){return [
+{v:"edit",l:"编辑内容"},
+{v:"clear",l:"清空正文"},
+{v:"add",l:"新增"},
+{v:"del",l:"删除"},
+{v:"move",l:"调整顺序"},
+{v:"module",l:"模块操作"},
+{v:"review",l:"评审记录"}
+]},
+clAll(){
+var self=this,known={};
+this.modules.forEach(function(m,mi){m.items.forEach(function(it,ii){known[it.k]={no:(mi+1)+"."+(ii+1)+".",modKey:m.key}})});
+var out=Object.keys(this.changelog||{}).map(function(id){
+var r=self.changelog[id]||{};
+var cnt=String(r.content||""),tbs=(r.tables||[]);
+return {id:id,t:r.t||"",ts:r.ts||0,op:r.op||"-",type:r.type||"edit",modKey:r.modKey||"",modName:r.modName||"",cardKey:r.cardKey||"",cardName:r.cardName||"",no:known[r.cardKey]?known[r.cardKey].no:(r.no||""),detail:r.detail||"",content:cnt,tables:tbs,cardGone:!!(r.cardKey&&!known[r.cardKey]),tagType:clTagType(r.type)};
+});
+out.sort(function(a,b){return (b.ts||0)-(a.ts||0)});
+return out;
+},
+clList(){
+var kw=(this.clKw||"").trim().toLowerCase();
+return this.clAll.filter(function(x){
+if(this.clMod&&x.modKey!==this.clMod)return false;
+if(this.clType&&x.type!==this.clType)return false;
+if(kw){
+var hay=(x.modName+" "+x.cardName+" "+x.op+" "+x.detail+" "+(x.content||"")).toLowerCase();
+if(hay.indexOf(kw)<0)return false;
+}
+return true;
+},this);
+},
+/* 每个数据项拆成三块：main（数据项）/ popup（列表与弹框）/ det（详情） */
+/* 每个数据项只渲染一张主卡：正文全部直接展示，不再划分子卡 */
+blocks(){var m={};this.modules.forEach(function(mo){(mo.items||[]).forEach(function(it){
+var b=prdBuckets(it.d||"");
+var all=b.main.concat(b.popup).concat(b.detail);
+m[it.k]={main:all.length?prdRenderLines(all):"",pop:"",det:""};
+})});return m}},
+mounted(){
+this.rvCalcH();
+window.addEventListener("resize",this.rvCalcH);
+},
+watch:{
+rvDlg:function(v){if(v)this.$nextTick(this.rvCalcH)}
+},
+methods:{
+rvCalcH(){
+var self=this;
+function calc(){
+var dlg=document.querySelector('[aria-label="评审记录总览"]');
+if(!dlg||!dlg.getBoundingClientRect().height)return;
+var tbl=dlg.querySelector(".el-table");
+if(!tbl)return;
+var top=tbl.getBoundingClientRect().top;
+var avail=window.innerHeight-top-56;
+self.rvTblH=Math.max(160,Math.floor(avail));
+}
+this.$nextTick(calc);setTimeout(calc,420);
+},
+renderDoc(t){return prdRender(typeof t==="string"?t:(t&&t.d)||"")},
+mainDoc(t){return prdBlock(typeof t==="string"?t:(t&&t.d)||"","main")},
+popDoc(t){return prdBlock(typeof t==="string"?t:(t&&t.d)||"","popup")},
+detDoc(t){return prdBlock(typeof t==="string"?t:(t&&t.d)||"","detail")},
+openReview(it){this.curKey=it.k;this.editIdx=-1;this.form={stage:"内部评审",users:"",content:""};this.dlg=true},
+/* 评审记录时间：统一到秒，去掉历史遗留的重复「（已修改）」后缀 */
+rvStamp(){var d=new Date(),p=function(n){return(n<10?"0":"")+n};return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+" "+p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds())},
+rvBaseDate(s){return rvBaseDate(s)},
+rvDateText(r){
+var base=rvBaseDate(r.date);
+if(r.mod)return base+"（已修改 "+r.mod+"）";
+if(r.edited)return base+"（已修改）";
+return base;
+},
+openRvAll(){this.rvMod="";this.rvStage="";this.rvKw="";this.rvDlg=true},
+/* ===== 历史需求总览（记录结构与卡片「历史需求内容」一致） ===== */
+openClAll(){this.clMod="";this.clType="";this.clKw="";this.clDlg=true},
+/* 左侧切换模块：右侧正文回到顶部 */
+selMod(k){
+this.cur=k;this.navHit="";
+this.$nextTick(function(){
+var m=document.querySelector(".main");
+if(m)m.scrollTop=0;
+});
+},
+/* 右侧悬浮定位栏：回到顶部 / 跳到某张卡片 */
+navMain(){return document.querySelector(".main")},
+navTop(){
+var m=this.navMain();if(!m)return;
+if(m.scrollTo)m.scrollTo({top:0,behavior:"smooth"});else m.scrollTop=0;
+this.navHit="";
+},
+navTo(it){
+this.navHit=it.k;
+var el=document.querySelector('[data-card-key="'+it.k+'"]');
+var m=this.navMain();
+if(!el||!m)return;
+if(el.scrollIntoView)el.scrollIntoView({behavior:"smooth",block:"center"});
+el.classList.add("rv-hit");
+setTimeout(function(){el.classList.remove("rv-hit")},2400);
+},
+clLocate(row){
+if(!row||!row.cardKey){this.$message.warning("该卡片已被删除，无法定位");return}
+var ex=null;
+this.modules.forEach(function(m,mi){m.items.forEach(function(it,ii){if(it.k===row.cardKey)ex={modKey:m.key,no:(mi+1)+"."+(ii+1)+"."}})});
+if(!ex){this.$message.warning("该卡片已被删除，无法定位");return}
+this.clDlg=false;
+this.cur=ex.modKey;
+this.$nextTick(function(){
+var el=document.querySelector('[data-card-key="'+row.cardKey+'"]');
+if(!el)return;
+if(el.scrollIntoView)el.scrollIntoView({behavior:"smooth",block:"center"});
+el.classList.add("rv-hit");
+setTimeout(function(){el.classList.remove("rv-hit")},2400);
+});
+},
+cardCtx(k){
+var out={modKey:"",modName:"",cardName:"",no:""};
+this.modules.forEach(function(m,mi){m.items.forEach(function(it,ii){if(it.k===k){out.modKey=m.key;out.modName=m.name;out.cardName=it.t;out.no=(mi+1)+"."+(ii+1)+"."}})});
+return out;
+},
+/* 统一写一条历史需求记录：op=操作名，type=类型（edit/add/del/clear/move/module/review），info.detail=细节，
+   info.content/info.tables=该操作对应的内容快照（结构与卡片「历史需求」一致） */
+logOp(op,type,info){
+info=info||{};
+var ctx=info.cardKey?this.cardCtx(info.cardKey):{modKey:"",modName:"",cardName:""};
+var t=Date.now();
+function cut(x){var s=x==null?"":String(x);return s.length>20000?s.slice(0,20000)+"\n…（内容过长，已截断，完整内容见卡片历史需求）":s}
+var cnt=cut(info.content);
+var tbls=info.tables?JSON.parse(JSON.stringify(info.tables)):[];
+var rec={t:this.rvStamp(),ts:t,op:op,type:type||"edit",modKey:info.modKey||ctx.modKey,modName:info.modName||ctx.modName,cardKey:info.cardKey||"",cardName:info.cardName||ctx.cardName,no:info.no||ctx.no||"",detail:info.detail||"",content:cnt,tables:tbls};
+var id="lg"+t+"-"+Math.random().toString(36).slice(2,6);
+this.$set(this.changelog,id,rec);
+var keys=Object.keys(this.changelog);
+if(keys.length>500){
+keys.sort(function(a,b){return (this.changelog[a].ts||0)-(this.changelog[b].ts||0)},this);
+for(var i=0;i<keys.length-500;i++)this.$delete(this.changelog,keys[i]);
+}
+try{
+var s=JSON.stringify(this.changelog),guard=0;
+/* 内容快照占地方，超量时从最旧的开始丢，保证 localStorage 不被写爆 */
+while(s.length>2500000&&guard++<20){
+var ks=Object.keys(this.changelog).sort(function(a,b){return (this.changelog[a].ts||0)-(this.changelog[b].ts||0)},this);
+for(var j=0;j<Math.min(50,ks.length-1);j++)this.$delete(this.changelog,ks[j]);
+s=JSON.stringify(this.changelog);
+}
+localStorage.setItem(NS+"changelog",s);
+}catch(e){}
+markTs();
+},
+rvStageType(st){return st==="技术评审"?"warning":(st==="开发评审"?"success":"info")},
+rvRowClass(o){return o.row.cardName==="（卡片已删除）"?"rv-row-del":""},
+rvLocate(row){
+if(!row.cardKey){this.$message.warning("该卡片已被删除，无法定位");return}
+this.rvDlg=false;
+this.cur=row.modKey;
+this.$set(this.rOpen,row.cardKey,true);
+this.$nextTick(function(){
+var el=document.querySelector('[data-card-key="'+row.cardKey+'"]');
+if(!el)return;
+if(el.scrollIntoView)el.scrollIntoView({behavior:"smooth",block:"center"});
+el.classList.add("rv-hit");
+setTimeout(function(){el.classList.remove("rv-hit")},2400);
+});
+},
+openEdit(it){this.editKey=it.k;this.editTitle=it.t;this.editName=it.t;this.editContent=it.d||"";this.editTables=JSON.parse(JSON.stringify((this.tables[it.k]||[])));this.editTables.forEach(function(t){if(!t.pos)t.pos="main"});this.editFull=false;this.editDlg=true},
+openNewItem(){this.newName="";this.newDlg=true},
+openNewMod(){this.newModName="";this.newModDlg=true},
+openEditMod(m){this.editModKey=m.key;this.editModName=m.name;this.editModOld=m.name;this.editModDlg=true},
+saveEditMod(){
+var n=(this.editModName||"").trim(),self=this;
+if(!n){this.$message.warning("请填写模块名称");return}
+var hit=this.modules.filter(function(x){return x.key===self.editModKey})[0];
+if(!hit){this.editModDlg=false;return}
+var old=hit.name;hit.name=n;this.editModDlg=false;persistModules();
+if(old===n){this.$message.success("模块名称未变化");return}
+this.logOp("模块改名","module",{modKey:this.editModKey,modName:n,detail:"「"+old+"」→「"+n+"」"});
+this.$message.success("已把「"+old+"」改名为「"+n+"」");
+},
+saveNewMod(){
+var n=(this.newModName||"").trim();
+if(!n){this.$message.warning("请填写模块名称");return}
+var k="mod"+Date.now(),self=this;
+this.modules.push({key:k,name:n,items:[]});
+this.newModDlg=false;this.cur=k;persistModules();
+this.logOp("新增模块","module",{modKey:k,modName:n,detail:"新模块，暂无数据项"});
+this.$nextTick(function(){self.$message.success("已新增模块「"+n+"」，用右侧「新增数据项」加卡")});
+},
+delModule(m){
+var self=this,n=(m.items||[]).length;
+this.$confirm("确认删除模块「"+m.name+"」？其下 "+n+" 张数据项卡片及全部内容一并清除，不可恢复。","删除确认",{type:"warning",confirmButtonText:"删除",cancelButtonText:"取消"}).then(function(){
+var keys={};(m.items||[]).forEach(function(it){keys[it.k]=1;if(self.deleted.indexOf(it.k)<0)self.deleted.push(it.k)});
+if(self.deleted.indexOf("mod:"+m.key)<0)self.deleted.push("mod:"+m.key);
+self.modules=self.modules.filter(function(x){return x.key!==m.key});
+["contents","tables","mtimes","hists","reviews"].forEach(function(n2){Object.keys(self[n2]).forEach(function(k){if(keys[k])self.$delete(self[n2],k)})});
+localStorage.setItem(NS+"deleted",JSON.stringify(self.deleted));persistModules();
+["contents","tables","mtimes","hists","reviews"].forEach(function(n2){localStorage.setItem(NS+""+n2,JSON.stringify(self[n2]))});markTs();
+if(self.cur===m.key&&self.modules.length)self.cur=self.modules[0].key;
+self.logOp("删除模块","del",{modKey:m.key,modName:m.name,detail:"含 "+n+" 张卡片"+(n?"："+(m.items||[]).map(function(x){return x.t}).slice(0,8).join("、")+(n>8?"…":"")+"；正文/表格/评审/历史一并删除":"")});
+self.$message.success("已删除模块「"+m.name+"」");
+}).catch(function(){});
+},
+startEditTitle(){
+this.titleDraft=this.docTitle;this.titleEditing=true;
+this.$nextTick(function(){try{var el=document.querySelector(".left-head .el-input__inner");if(el){el.focus();el.select()}}catch(e){}});
+},
+cancelEditTitle(){this.titleEditing=false;this.titleDraft=this.docTitle},
+saveTitle(){
+var v=String(this.titleDraft||"").replace(/[\r\n]/g," ").trim();
+if(!v){this.$message.warning("标题不能为空");return}
+var old=this.docTitle;
+if(v===old){this.titleEditing=false;return}
+this.docTitle=v;this.titleCustom=true;
+try{localStorage.setItem(NS+"title",v)}catch(e){}
+document.title=v;
+this.logOp("修改标题","module",{modKey:"",modName:"文档标题",cardName:"标题",detail:"「"+old+"」→「"+v+"」"});
+this.titleEditing=false;
+this.$message.success("标题已更新，浏览器标签页同步换成："+v);
+},
+saveNewItem(){
+var n=(this.newName||"").trim();
+if(!n){this.$message.warning("请填写数据项名称");return}
+var k="it"+Date.now(),self=this;
+this.curModule.items.push({k:k,t:n,d:""});
+this.$set(this.mtimes,k,"");this.newDlg=false;touchKeys([k]);persistModules();
+this.logOp("新增数据项","add",{cardKey:k,cardName:n,detail:"新建卡片（正文待填写）"});
+this.$nextTick(function(){self.$message.success("已新增数据项「"+n+"」，点卡片上的「编辑」写内容")});
+},
+itemIdx(it){return this.curModule.items.findIndex(function(x){return x.k===it.k})},
+isFirst(it){return this.itemIdx(it)<=0},
+isLast(it){var l=this.curModule.items.length,i=this.itemIdx(it);return i<0||i>=l-1},
+moveItem(it,dir){
+var a=this.curModule.items,i=this.itemIdx(it),j=i+dir;
+if(i<0||j<0||j>=a.length)return;
+var t=a[i];this.$set(a,i,a[j]);this.$set(a,j,t);
+var ctx=this.cardCtx(it.k);
+this.logOp("调整顺序","move",{modKey:ctx.modKey,modName:ctx.modName,cardKey:it.k,cardName:it.t,detail:"「"+it.t+"」"+(dir<0?"上移":"下移")+"一位"});
+persistModules();this.$message.success("已移动「"+it.t+"」");
+},
+addTable(){this.editTables.push({name:"",pos:"main",cols:["列1","列2","列3"],rows:[["","",""],["","",""]]})},
+tbls(k,pos){var a=this.tables[k]||[];return a.filter(function(t){return (t.pos||"main")===pos})},
+addRow(t){t.rows.push(t.cols.map(function(){return""}))},
+addCol(t){t.cols.push("列"+(t.cols.length+1));t.rows.forEach(function(r){r.push("")})},
+delCol(t,ci){t.cols.splice(ci,1);t.rows.forEach(function(r){r.splice(ci,1)})},
+saveEdit(){
+var self=this;
+var d=new Date(),pad=function(n){return(n<10?"0":"")+n};
+var now=d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+" "+pad(d.getHours())+":"+pad(d.getMinutes());
+/* 保存前先把「被覆盖的旧版本」写进历史：这样第一次修改后，最初新建时写的内容依然能回看 */
+var oldC=this.contents[this.editKey]||"";
+var oldT=JSON.parse(JSON.stringify(this.tables[this.editKey]||[]));
+var newC=this.editContent==null?"":this.editContent;
+var newT=JSON.parse(JSON.stringify(this.editTables||[]));
+var oldSig=JSON.stringify([oldC,oldT]);
+if(oldSig!==JSON.stringify([newC,newT])&&(String(oldC).trim()||oldT.length)){
+var oldList=this.hists[this.editKey]||[];
+var newest=oldList[0];
+var dup=newest&&JSON.stringify([newest.content||"",newest.tables||[]])===oldSig;
+if(!dup){
+if(!this.hists[this.editKey])this.$set(this.hists,this.editKey,[]);
+this.hists[this.editKey].unshift({date:this.mtimes[this.editKey]||now,content:oldC,tables:oldT,label:oldList.length?"修改前内容":"首次创建内容"});
+if(this.hists[this.editKey].length>50)this.hists[this.editKey].splice(50);
+localStorage.setItem(NS+"hists",JSON.stringify(this.hists));markTs();
+}
+}else if(!(this.hists[this.editKey]||[]).length&&String(newC).trim()){
+/* 卡片原来没正文（新建后第一次填写）：把这版直接记为最初内容，历史立刻可回看 */
+if(!this.hists[this.editKey])this.$set(this.hists,this.editKey,[]);
+this.hists[this.editKey].push({date:now,content:newC,tables:newT,label:"首次创建内容"});
+localStorage.setItem(NS+"hists",JSON.stringify(this.hists));markTs();
+}
+this.modules.forEach(function(m){m.items.forEach(function(it){if(it.k===self.editKey){it.d=self.editContent;var nm=(self.editName||"").trim();if(nm)it.t=nm}})});
+this.$set(this.contents,this.editKey,this.editContent);
+localStorage.setItem(NS+"contents",JSON.stringify(this.contents));touchKeys([this.editKey]);markTs();persistModules();
+this.$set(this.tables,this.editKey,JSON.parse(JSON.stringify(this.editTables)));localStorage.setItem(NS+"tables",JSON.stringify(this.tables));markTs();
+this.$set(this.mtimes,this.editKey,now);localStorage.setItem(NS+"mtimes",JSON.stringify(this.mtimes));markTs();
+/* 写一条历史需求记录（正文/表格/名称的变化都记下来，正文被删空单独标为「清空正文」） */
+var nmOld=this.editTitle||"",nmNew=(this.editName||"").trim()||nmOld,chg=[];
+if(nmNew!==nmOld)chg.push("名称「"+nmOld+"」→「"+nmNew+"」");
+if(oldC!==newC){
+var ol=String(oldC).length,nl=String(newC).length;
+if(!String(newC).trim())chg.push("正文已清空（原 "+ol+" 字）");
+else if(!String(oldC).trim())chg.push("正文 "+nl+" 字（原来为空）");
+else chg.push("正文 "+ol+"→"+nl+" 字");
+}
+if(JSON.stringify(oldT)!==JSON.stringify(newT))chg.push("表格 "+oldT.length+"→"+newT.length+" 个");
+if(chg.length){
+var isClear=!String(newC).trim()&&String(oldC).trim();
+this.logOp(isClear?"清空正文":"编辑内容",isClear?"clear":"edit",{cardKey:this.editKey,cardName:nmNew,detail:chg.join("；"),content:isClear?oldC:newC,tables:isClear?oldT:newT});
+}
+this.editDlg=false;this.$message.success("内容已保存");
+},
+openHist(it){this.histTitle=it.t;this.histList=(this.hists[it.k]||[]).slice();this.histDlg=true},
+delItem(it){
+var self=this,key=it.k;
+this.$confirm("确认删除数据项「"+it.t+"」？其正文、表格、评审与历史记录一并清除。","删除确认",{type:"warning",confirmButtonText:"删除",cancelButtonText:"取消"}).then(function(){
+var ctx=self.cardCtx(key);
+var ctxInfo="正文 "+String(self.contents[key]||"").length+" 字、表格 "+((self.tables[key]||[]).length)+" 个、评审 "+((self.reviews[key]||[]).length)+" 条、历史 "+((self.hists[key]||[]).length)+" 版";
+var delC=self.contents[key]||"",delT=JSON.parse(JSON.stringify(self.tables[key]||[]));
+self.modules.forEach(function(m){m.items=m.items.filter(function(x){return x.k!==key})});
+if(self.deleted.indexOf(key)<0)self.deleted.push(key);
+["contents","tables","mtimes","hists","reviews"].forEach(function(n){self.$delete(self[n],key)});
+localStorage.setItem(NS+"deleted",JSON.stringify(self.deleted));persistModules();
+["contents","tables","mtimes","hists","reviews"].forEach(function(n){localStorage.setItem(NS+""+n,JSON.stringify(self[n]))});markTs();
+self.logOp("删除数据项","del",{modKey:ctx.modKey,modName:ctx.modName,cardKey:key,cardName:it.t,no:ctx.no,detail:"连同"+ctxInfo+"一并删除",content:delC,tables:delT});
+self.$message.success("已删除「"+it.t+"」");
+}).catch(function(){});
+},
+/* 从「已删除」清单里恢复：模块连同其下被删卡片一起恢复，正文按历史需求记录找回最近一版 */
+restoreDel(row){
+var self=this,drop=[row.raw],mk=row.isMod?row.raw.slice(4):"";
+if(row.isMod){
+(SEED.modules||[]).forEach(function(m){if(m.key!==mk)return;(m.items||[]).forEach(function(it){drop.push(it.k)})});
+/* 该模块下本地新建（文件里没有）的卡片也一并找回 */
+Object.keys(this.changelog||{}).forEach(function(id){var r=self.changelog[id]||{};if(r.modKey===mk&&r.cardKey&&drop.indexOf(r.cardKey)<0)drop.push(r.cardKey)});
+}
+/* 每张卡取「最近一条带正文的历史需求记录」 */
+var latest={};
+Object.keys(this.changelog||{}).forEach(function(id){
+var r=self.changelog[id]||{};
+if(!r.cardKey||typeof r.content!=="string")return;
+var ts=Number(r.ts)||0;
+if(!latest[r.cardKey]||ts>=latest[r.cardKey].ts)latest[r.cardKey]={ts:ts,rec:r};
+});
+var d=new Date(),p=function(n){return(n<10?"0":"")+n};
+var now=d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+" "+p(d.getHours())+":"+p(d.getMinutes());
+var rebuilt=0;
+drop.forEach(function(k){
+var rec=latest[k]&&latest[k].rec;
+var hit=null;
+self.modules.forEach(function(m){m.items.forEach(function(it){if(it.k===k)hit=it})});
+if(!hit&&rec){
+var m=self.modules.filter(function(x){return x.key===rec.modKey})[0];
+if(!m&&rec.modKey){m={key:rec.modKey,name:rec.modName||rec.modKey,items:[]};self.modules.push(m)}
+if(m){m.items.push({k:k,t:rec.cardName||k,d:""});rebuilt++}
+}
+if(rec){
+self.$set(self.contents,k,rec.content);
+if(rec.tables&&rec.tables.length)self.$set(self.tables,k,rec.tables);
+var hl=self.hists[k]||[];
+if(!hl.length)self.$set(self.hists,k,[{date:"恢复前版本",content:rec.content,tables:rec.tables||[],label:"恢复自历史需求"}]);
+self.$set(self.mtimes,k,now);
+}
+});
+this.deleted=this.deleted.filter(function(k){return drop.indexOf(k)<0});
+try{
+localStorage.setItem(NS+"deleted",JSON.stringify(this.deleted));
+persistModules();
+["contents","tables","mtimes","hists"].forEach(function(n){localStorage.setItem(NS+""+n,JSON.stringify(self[n]))});
+markTs();
+}catch(e){}
+this.delDlg=false;
+this.$message.success("已恢复「"+(row.name||row.raw)+"」"+(rebuilt?"，其中 "+rebuilt+" 张卡按历史需求记录找回正文":"")+"，页面即将刷新");
+setTimeout(function(){location.reload()},700);
+},
+restoreAllDel(){
+var self=this;
+this.$confirm("恢复全部已删除的模块与数据项？","恢复确认",{type:"warning",confirmButtonText:"全部恢复",cancelButtonText:"取消"}).then(function(){
+self.deleted=[];
+try{localStorage.setItem(NS+"deleted","[]")}catch(e){}
+self.delDlg=false;
+self.$message.success("已全部恢复，页面即将刷新");
+setTimeout(function(){location.reload()},600);
+}).catch(function(){});
+},
+buildDataJS(){
+var d=new Date(),pad=function(n){return(n<10?"0":"")+n};
+var st=d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+" "+pad(d.getHours())+":"+pad(d.getMinutes())+":"+pad(d.getSeconds());
+return "/* "+(DIR_NAME||"PRD")+"-PRD 数据文件，随本文件夹迁移，勿删 */\nwindow.PRD_DATA="+JSON.stringify({version:SEED_VER,docId:DOC_ID,title:this.titleCustom?this.docTitle:"",modules:this.modules,contents:this.contents,reviews:this.reviews,mtimes:this.mtimes,hists:this.hists,changelog:this.changelog,tables:this.tables,deleted:this.deleted,exported:st},null,1)+";\n";
+},
+buildSelfContained(){
+var d=new Date(),pad=function(n){return(n<10?"0":"")+n};
+var st=d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+" "+pad(d.getHours())+":"+pad(d.getMinutes())+":"+pad(d.getSeconds());
+var mkt={};try{Object.keys(SEED.keyts||{}).forEach(function(k){mkt[k]=SEED.keyts[k]});Object.keys(KEYTS).forEach(function(k){if(!mkt[k]||KEYTS[k]>mkt[k])mkt[k]=KEYTS[k]})}catch(e){}
+if(!DOC_ID){DOC_ID="d"+Date.now().toString(36)+Math.random().toString(36).slice(2,7);try{localStorage.setItem(NS+"docid",DOC_ID)}catch(e){}}
+var data=JSON.stringify({version:SEED_VER,docId:DOC_ID,title:this.titleCustom?this.docTitle:"",modules:this.modules,contents:this.contents,reviews:this.reviews,mtimes:this.mtimes,hists:this.hists,changelog:this.changelog,tables:this.tables,deleted:this.deleted,keyts:mkt,exported:st});
+var styleEl=document.querySelector("style");
+var style=styleEl?styleEl.outerHTML:"";
+var S="<"+"script>",S2="<"+"script ",E="</"+"script>";
+var headTitle=(this.titleCustom?this.docTitle:DOC_HEAD_DEFAULT).replace(/[<>]/g,"");
+return "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n<title>"+headTitle+"</title>\n<link rel=\"stylesheet\" href=\"https://unpkg.com/element-ui/lib/theme-chalk/index.css\">\n"+style+"\n</head>\n<body>\n"+PRD_APP_TPL+"\n"+S+"window.PRD_DATA="+data+";window.PRD_DATA_INLINE=window.PRD_DATA;"+E+"\n"+S2+"src=\"https://unpkg.com/vue@2/dist/vue.js\">"+E+"\n"+S2+"src=\"https://unpkg.com/element-ui/lib/index.js\">"+E+"\n"+S2+"id=\"prd-app\">"+PRD_APP_SRC+E+"\n</body>\n</html>\n";
+},
+saveFile(){
+var html=this.buildSelfContained();
+var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([html],{type:"text/html"}));a.download=(DIR_NAME||"PRD")+"-PRD.html";a.click();
+this.$message.success("已保存为单文件，用它覆盖原文件后数据就在页面里，复制到任何位置都在");
+},
+/* 清空本文档：只清本路径的暂存（不碰别的目录/别的文件的），用于同路径想要空白重来 */
+clearDoc(){
+var self=this;
+this.$confirm("将清空「"+(DIR_NAME||"当前文档")+"」在本浏览器里的全部内容（卡片、正文、评审记录、历史需求）并回到空白文档，文件本身不会被删除。确定清空？","清空本文档",{type:"warning",confirmButtonText:"确定清空",cancelButtonText:"取消"}).then(function(){
+try{var ks=[];for(var i=localStorage.length-1;i>=0;i--){var k=localStorage.key(i);if(k&&k.indexOf(NS)===0)ks.push(k)}ks.forEach(function(k){try{localStorage.removeItem(k)}catch(e){}})}catch(e){}
+self.$message.success("已清空，正在重载为空白文档…");
+setTimeout(function(){location.reload()},500);
+}).catch(function(){});
+},
+toggleR(k){this.$set(this.rOpen,k,!this.rOpen[k])},
+/* 评审记录处理标记：两个勾选框互斥（已修改 / 不予修改），未勾选=未标记 */
+rvStatusOf(r){return (r&&r.st)||"未标记"},
+rvStType(r){var s=(r&&r.st)||"";return s==="已修改"?"success":(s==="不予修改"?"warning":"info")},
+rvSaveReviews(k){try{localStorage.setItem(NS+"reviews",JSON.stringify(this.reviews))}catch(e){}if(k)touchKeys([k]);markTs()},
+/* 勾选「已修改」：清掉不予修改与理由，理由数据项随之消失 */
+onFixCheck(k,i){
+var arr=this.reviews[k]||[],r=arr[i];if(!r)return;
+var wasFix=this.rvStatusOf(r)==="已修改";
+if(wasFix){
+/* 再次点击=取消勾选 */
+this.$set(r,"st","");this.$set(r,"rsn","");
+}else{
+this.$set(r,"st","已修改");this.$set(r,"rsn","");
+}
+this.rvSaveReviews(k);
+this.logOp("修改处理标记","review",{cardKey:k,detail:String(r.content||"").replace(/\s+/g," ").slice(0,40)+"… → "+(wasFix?"未标记":"已修改")});
+},
+/* 勾选「不予修改」：先弹框填理由，保存后才勾上；取消则不改变原状态 */
+onDenyCheck(k,i){
+var arr=this.reviews[k]||[],r=arr[i];if(!r)return;
+if(this.rvStatusOf(r)==="不予修改"){
+/* 再次点击=取消勾选，同时清掉理由 */
+this.$set(r,"st","");this.$set(r,"rsn","");
+this.rvSaveReviews(k);
+this.logOp("修改处理标记","review",{cardKey:k,detail:String(r.content||"").replace(/\s+/g," ").slice(0,40)+"… → 未标记"});
+return;
+}
+this.openRsn(k,i);
+},
+openRsn(k,i){
+var arr=this.reviews[k]||[],r=arr[i];if(!r)return;
+this.rsnKey=k;this.rsnIdx=i;this.rsnText=r.rsn||"";this.rsnContent=r.content||"";this.rsnDlg=true;
+},
+saveRsn(){
+var t=(this.rsnText||"").trim();
+if(!t){this.$message.warning("请填写不修改理由");return}
+var arr=this.reviews[this.rsnKey]||[],r=arr[this.rsnIdx];
+if(!r){this.rsnDlg=false;return}
+this.$set(r,"st","不予修改");this.$set(r,"rsn",t);
+this.rvSaveReviews(this.rsnKey);
+this.logOp("标记不予修改","review",{cardKey:this.rsnKey,detail:"理由："+t.slice(0,60)});
+this.rsnDlg=false;this.$message.success("已保存不修改理由");
+},
+editReview(k,i){this.curKey=k;this.editIdx=i;var r=this.reviews[k][i];this.form={stage:r.stage,users:r.users==="未填写"?"":r.users,content:r.content};this.dlg=true},
+saveReview(){
+if(!this.form.content.trim()){this.$message.warning("请填写评审修改内容");return}
+if(!this.reviews[this.curKey])this.$set(this.reviews,this.curKey,[]);
+var d=new Date(),pad=function(n){return(n<10?"0":"")+n};
+var rec={stage:this.form.stage,users:this.form.users||"未填写",content:this.form.content,date:d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+" "+pad(d.getHours())+":"+pad(d.getMinutes())};
+if(this.editIdx>=0){
+/* 保留原创建时间，修改时间单独记在 mod 字段，页面只显示一个「（已修改 …）」 */
+var old=this.reviews[this.curKey][this.editIdx];
+rec.date=this.rvBaseDate(old.date);rec.mod=this.rvStamp();
+/* 处理结论（已修改/不予修改）与不修改理由随内容一起保留 */
+if(old.st)rec.st=old.st;
+if(old.rsn)rec.rsn=old.rsn;
+this.reviews[this.curKey].splice(this.editIdx,1,rec)
+}else{rec.date=this.rvStamp();this.reviews[this.curKey].push(rec)};
+/* 自动写回前端页面：持久化到 localStorage，下次打开仍在 */
+localStorage.setItem(NS+"reviews",JSON.stringify(this.reviews));touchKeys([this.curKey]);markTs();
+var isEdit=this.editIdx>=0;
+this.logOp(isEdit?"修改评审记录":"新增评审记录","review",{cardKey:this.curKey,detail:rec.stage+"｜"+String(rec.content).replace(/\s+/g," ").slice(0,60)+(String(rec.content).length>60?"…":""),content:rec.content});
+this.dlg=false;this.$message.success("已保存到评审修改内容");
+},
+delReview(k,i){var self=this;this.$confirm("删除这条评审记录？").then(function(){
+var r=(self.reviews[k]||[])[i]||{};
+self.reviews[k].splice(i,1);localStorage.setItem(NS+"reviews",JSON.stringify(self.reviews));touchKeys([k]);markTs();
+self.logOp("删除评审记录","review",{cardKey:k,detail:(r.stage||"评审")+"｜"+String(r.content||"").replace(/\s+/g," ").slice(0,60),content:r.content||""});
+})},
+doArchive(){
+var d=new Date(),pad=function(n){return(n<10?"0":"")+n};
+var ts=""+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+"-"+pad(d.getHours())+pad(d.getMinutes());
+var prdHists=(function(h){var o={};Object.keys(h).forEach(function(k){o[k]=(h[k]||[]).map(function(x){return {date:x.date,label:x.label||"",h:prdRender(x.content||""),tables:x.tables||[]}})});return o})(this.hists);
+var data=JSON.stringify(this.modules.map(function(m){return {key:m.key,name:m.name,items:m.items.map(function(it){var b=prdBuckets(it.d||"");return {k:it.k,t:it.t,h1:(b.main.length?prdRenderLines(b.main):"")+(b.popup.length?prdRenderLines(b.popup,"fields"):"")+(b.detail.length?prdRenderLines(b.detail,"fields"):""),h2:"",h3:""}})}})),rev=JSON.stringify(this.reviews),tb=JSON.stringify(this.tables),mts=JSON.stringify(this.mtimes);
+var hh=JSON.stringify(prdHists);
+var clArr=(this.clAll||[]).map(function(r){return {t:r.t,op:r.op,tag:r.tagType,no:r.no||"",modName:r.modName||"",cardKey:r.cardKey||"",cardName:r.cardName||"",gone:!!r.cardGone,detail:r.detail||"",h:prdRender(r.content||""),tables:r.tables||[]}});
+var cl=JSON.stringify(clArr);
+/* 评审记录总览：拍平成一份只读快照（模块/卡片/编号/阶段/处理标记/意见/参与人/时间） */
+var rvArr=(this.rvAll||[]).map(function(x){var r=x.rec||{};return {modKey:x.modKey||"",modName:x.modName||"",cardKey:x.cardKey||"",cardName:x.cardName||"",no:x.no||"",stage:r.stage||"",users:r.users||"",content:r.content||"",rsn:r.rsn||"",st:r.st||"",date:r.date||"",mod:r.mod||"",edited:!!r.edited}});
+var rv=JSON.stringify(rvArr);
+var parts=[];
+parts.push("<!DOCTYPE html><html lang='zh-CN'><head><meta charset='UTF-8'><title>"+(this.titleCustom?this.docTitle:DOC_HEAD_DEFAULT).replace(/[<>]/g,"")+"（归档"+ts+"·只读）</title><link rel='stylesheet' href='https://unpkg.com/element-ui/lib/theme-chalk/index.css'><style>body{margin:0;background:#f5f7fa}.layout{display:flex;height:100vh;overflow:hidden}.left{width:300px;flex:none;background:#fff;border-right:1px solid #ebeef5;display:flex;flex-direction:column}.left-head{padding:16px;border-bottom:1px solid #ebeef5}.left-head h1{font-size:16px;margin:0 0 6px}.menu{flex:1;overflow:auto}.main{flex:1;overflow:auto;padding:20px 28px}.field{margin-bottom:16px}.review-item{border-bottom:1px dashed #f0d9a8;padding:8px 0}.review-item:last-child{border-bottom:none}[v-cloak]{display:none}.el-menu-item.is-active{color:#409EFF;background:#ecf5ff}.prd-body{font-size:13px;color:#606266;line-height:1.7}.prd-h{font-size:13px;font-weight:700;color:#303133;margin:10px 0 6px}.prd-meta{margin:3px 0}.prd-meta .k{font-weight:700;color:#303133;margin-right:6px}.prd-p{margin:3px 0;white-space:pre-wrap}.prd-li{margin:3px 0 3px 4px}.prd-tblwrap{margin:6px 0 10px}.prd-cap{font-size:12px;font-weight:700;color:#409EFF;margin:8px 0 4px}table.prd-tbl{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}table.prd-tbl th,table.prd-tbl td{border:1px solid #ebeef5;padding:4px 6px;text-align:left;vertical-align:top;word-break:break-all}table.prd-tbl th{background:#fafafa;color:#909399;font-weight:400}table.prd-tbl td.prd-idx{width:46px;text-align:center;color:#909399}.field.sub{border-left:3px solid #409EFF;margin-top:-8px}.tag{display:inline-block;font-size:12px;line-height:20px;padding:0 8px;border-radius:10px;margin-right:8px}.tag-pop{background:#ecf5ff;color:#409EFF;border:1px solid #d9ecff}.tag-det{background:#f0f9eb;color:#67c23a;border:1px solid #e1f3d8}.sub-ttl{font-size:12px;color:#909399}.rightcol{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;position:relative}.topbar{height:52px;flex:none;background:#fff;border-bottom:1px solid #ebeef5;display:flex;align-items:center;padding:0 20px;gap:10px}.topbar .sp{flex:1}.navrail{position:absolute;right:10px;bottom:16px;z-index:50;display:flex;flex-direction:column;gap:6px;align-items:center;max-height:calc(100% - 130px)}.navrail-list{display:flex;flex-direction:column;gap:6px;align-items:center;overflow-y:auto;overflow-x:hidden;max-height:100%;padding:2px}.navdot{width:16px;height:5px;border-radius:3px;background:#dcdfe6;cursor:pointer;flex:none;transition:all .15s}.navdot:hover{background:#409EFF;width:22px}.navdot.hit{background:#409EFF;width:22px}.navtop{width:26px;height:26px;border-radius:50%;border:1px solid #dcdfe6;background:#fff;color:#909399;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none}.navtop:hover{border-color:#409EFF;color:#409EFF}.field.rv-hit{box-shadow:0 0 0 2px #409EFF;border-radius:4px;transition:box-shadow .3s}.rv-no{cursor:pointer;color:#409EFF;text-decoration:underline;font-variant-numeric:tabular-nums}.rv-no:hover{color:#66b1ff}.cl-tl{max-height:calc(92vh - 232px);overflow-y:auto;overflow-x:hidden;padding-right:6px}.rv-stats{font-size:13px;color:#909399}.rv-row-del{color:#c0c4cc}.rv-bar{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}.rv-tblwrap{max-height:calc(92vh - 240px);overflow:auto}.rv-row-card{font-weight:600;color:#303133}.rv-row-mod{color:#606266}</style></head><body>");
+parts.push("<div id='app' v-cloak><div class='layout'><div class='left'><div class='left-head'><h1>"+(this.titleCustom?this.docTitle:DOC_H1_DEFAULT).replace(/[<>]/g,"")+"（归档 "+ts+" · 只读）</h1>"+(DIR_NAME?("<a href='./"+HOME_PAGE_NAME+"' target='_blank' style='font-size:12px;color:#409EFF'>对应页面："+HOME_PAGE_NAME+"</a>"):"")+"</div>");
+parts.push("<div class='menu'><el-menu :default-active='cur' @select='sel'>");
+parts.push("<el-menu-item v-for='(m,i) in modules' :key='m.key' :index='m.key'><span>{{(i+1)+'. '+m.name}}</span></el-menu-item>");
+parts.push("</el-menu></div></div>");
+parts.push("<div class='rightcol'><div class='topbar'><span class='sp'></span><el-button size='small' plain @click='clDlg=true'>历史需求总览</el-button><el-button size='small' type='primary' plain @click='rvDlg=true'>评审记录总览</el-button></div><div class='main'><h2 v-if='curModule.key' style='margin:0 0 12px'>{{(curIndex+1)+'. '+curModule.name}}</h2><el-empty v-if='!modules.length' description='文档暂无内容'></el-empty>");
+parts.push("<template v-for='(it,ii) in curModule.items'>");
+parts.push("<el-card class='field' :key='it.k' :data-card-key='it.k' shadow='never'><div slot='header' style='display:flex;align-items:center'><span class='card-no'>{{curIndex+1}}.{{ii+1}}.</span><span>{{it.t}}</span><span style='font-size:12px;color:#909399;margin-left:8px'>{{mtimes[it.k]||''}}</span><el-button size='mini' plain style='margin-left:auto' @click='openHist(it)'>历史需求</el-button></div><div style='font-size:14px;color:#606266;line-height:1.8' v-if='it.h1' v-html='it.h1'></div><div v-if='tables[it.k]&&tables[it.k].length' style='margin-top:10px'><div v-for='t in tables[it.k]' style='margin-bottom:10px'><div v-if='t.name' style='font-size:13px;font-weight:700;color:#606266;margin-bottom:4px'>{{t.name}}</div><el-table :data='t.rows' border size='mini'><el-table-column v-for='(c,ci) in t.cols' :key='ci' :label='c||(\"列\"+(ci+1))'><template slot-scope='s'>{{s.row[ci]}}</template></el-table-column></el-table></div></div><el-divider></el-divider><div style='background:#fdf6ec;border:1px solid #faecd8;border-radius:4px;padding:10px 12px'><div style='display:flex;align-items:center'><span style='font-size:13px;font-weight:700;color:#e6a23c'>评审记录</span><span style='font-size:12px;color:#c0a06a;margin-left:8px'>（仅记录评审意见/结论，不作为PRD正文）</span><span style='flex:1'></span><el-button type='text' size='mini' @click='toggleR(it.k)'>{{rOpen[it.k]?'收起':'展开'}}</el-button></div><div v-show='rOpen[it.k]'><div v-if='!reviews[it.k]||!reviews[it.k].length' style='font-size:13px;color:#909399'>暂无评审记录</div><div v-else><div class='review-item' v-for='r in reviews[it.k]'><div><el-tag size='mini'>{{r.stage}}</el-tag><span style='font-size:12px;color:#909399;margin-left:8px'>{{rvDateText(r)}}</span></div><div style='font-size:12px;color:#909399;margin-top:2px'>评审参与人：{{r.users}}</div><div style='font-size:13px;color:#606266;margin-top:4px;white-space:pre-wrap'>{{r.content}}</div><div style='margin-top:4px;font-size:12px;color:#606266'><span style='margin-right:16px'>{{rvStatusOf(r)==='已修改'?'☑':'☐'}} 已修改</span><span>{{rvStatusOf(r)==='不予修改'?'☑':'☐'}} 不予修改</span></div><div v-if='rvStatusNoFix(r)' style='font-size:12px;color:#b88230;margin-top:2px;white-space:pre-wrap'>不修改理由：{{rvRsnText(r)}}</div></div></div></div></div></el-card>");
+parts.push("</el-card>");
+parts.push("</template>");
+parts.push("<el-empty v-if='!curModule.items.length' description='该模块数据项待补充'></el-empty>");
+parts.push("</div>");
+parts.push("<div class='navrail'><div class='navrail-list'><el-tooltip v-for='(it,ii) in curModule.items' :key='it.k' :content=\"(curIndex+1)+'.'+(ii+1)+'. '+it.t\" placement='left' :open-delay='200'><div class='navdot' :class=\"{hit:navHit===it.k}\" @click='navTo(it)'></div></el-tooltip></div><el-tooltip content='返回顶部' placement='left' :open-delay='200'><div class='navtop' @click='navTop'><i class='el-icon-arrow-up'></i></div></el-tooltip></div>");
+parts.push("</div></div>");
+parts.push("<el-dialog :close-on-click-modal='false' :title=\"histTitle+' - 历史需求内容'\" :visible.sync='histDlg' width='600px'><el-timeline v-if='histList.length'><el-timeline-item v-for='h in histList' :key='h.date' :timestamp='h.date' placement='top'><el-card shadow='never' style='font-size:13px;color:#606266'><el-tag v-if='h.label' size='mini' style='margin-bottom:8px'>{{h.label}}</el-tag><div v-html='h.h'></div><div v-if='h.tables&&h.tables.length' style='margin-top:8px'><div v-for='t in h.tables' style='margin-bottom:8px'><div v-if='t.name' style='font-weight:700;margin-bottom:4px'>{{t.name}}</div><el-table :data='t.rows' border size='mini'><el-table-column v-for='(c,ci) in t.cols' :key='ci' :label='c||(\"列\"+(ci+1))'><template slot-scope='s'>{{s.row[ci]}}</template></el-table-column></el-table></div></div></el-card></el-timeline-item></el-timeline><el-empty v-else description='暂无历史需求记录'></el-empty></el-dialog>");
+parts.push("<el-dialog :close-on-click-modal='false' title='历史需求总览' :visible.sync='clDlg' width='92%' top='5vh'><div class='cl-tl'><el-timeline v-if='CL.length'><el-timeline-item v-for='(h,hi) in CL' :key='hi' :timestamp='h.t' placement='top'><el-card shadow='never' style='font-size:13px;color:#606266'><el-tag size='mini' :type='h.tag'>{{h.op}}</el-tag><span style='margin-left:8px;font-size:12px;color:#909399'>{{h.modName||'-'}} / </span><span :class=\"h.gone?'rv-row-del':'rv-no'\" :title=\"h.gone?'该卡片已删除，无法定位':'点击定位到 '+(h.no||'')+' '+(h.cardName||'')\" @click='clLocate(h)'>{{h.no?h.no+' ':''}}{{h.cardName||'-'}}</span><div v-if='h.detail' style='font-size:12px;color:#909399;margin-top:4px'>{{h.detail}}</div><div v-html='h.h' style='margin-top:8px'></div><div v-if='h.tables&amp;&amp;h.tables.length' style='margin-top:8px'><div v-for='(t,ti) in h.tables' :key='ti' style='margin-bottom:8px'><div v-if='t.name' style='font-weight:700;color:#606266;margin-bottom:4px'>{{t.name}}</div><el-table :data='t.rows' border size='mini'><el-table-column v-for='(c,ci) in t.cols' :key='ci' :label='c||(\"列\"+(ci+1))'><template slot-scope='s'>{{s.row[ci]}}</template></el-table-column></el-table></div></div></el-card></el-timeline-item></el-timeline><el-empty v-else description='暂无历史需求记录'></el-empty></div></el-dialog>");
+parts.push("<el-dialog :close-on-click-modal='false' title='评审记录总览' :visible.sync='rvDlg' width='92%' custom-class='rv-dlg' top='5vh'><div class='rv-bar'><el-select v-model='rvMod' size='small' clearable placeholder='全部模块' style='width:200px'><el-option v-for='m in modules' :key='m.key' :label='m.name' :value='m.key'></el-option></el-select><el-select v-model='rvStage' size='small' clearable placeholder='全部阶段' style='width:140px'><el-option label='内部评审' value='内部评审'></el-option><el-option label='技术评审' value='技术评审'></el-option><el-option label='开发评审' value='开发评审'></el-option></el-select><el-input v-model='rvKw' size='small' clearable placeholder='搜索评审意见 / 参与人' style='width:220px'></el-input><el-button size='small' @click='rvMod=\"\";rvStage=\"\";rvKw=\"\"'>重置</el-button><span style='flex:1'></span><span class='rv-stats'>共 {{rvList.length}} 条评审记录</span></div><div class='rv-tblwrap'><el-table :data='rvList' border size='mini' style='width:100%'><el-table-column label='序号' min-width='52'><template slot-scope='s'><span v-if='s.row.no' class='rv-no' :title=\"'点击定位到 '+s.row.no\" @click='rvLocate(s.row)'>{{s.row.no}}</span><span v-else class='rv-row-del'>-</span></template></el-table-column><el-table-column label='模块' min-width='112'><template slot-scope='s'><span class='rv-row-mod'>{{s.row.modName}}</span></template></el-table-column><el-table-column label='卡片' min-width='112'><template slot-scope='s'><span :class=\"s.row.cardName==='（卡片已删除）'?'rv-row-del':'rv-row-card'\">{{s.row.cardName}}</span></template></el-table-column><el-table-column label='阶段' width='90'><template slot-scope='s'><el-tag size='mini'>{{s.row.stage}}</el-tag></template></el-table-column><el-table-column label='处理标记' width='148'><template slot-scope='s'><el-tag size='mini' :type='rvStType(s.row)'>{{rvStatusOf(s.row)}}</el-tag><div v-if=\"rvStatusOf(s.row)==='不予修改'\" style='margin-top:4px;color:#b88230;white-space:pre-wrap;font-size:12px'>不修改理由：{{s.row.rsn||'（未填写）'}}</div></template></el-table-column><el-table-column label='评审意见' min-width='148'><template slot-scope='s'><span style='white-space:pre-wrap'>{{s.row.content}}</span></template></el-table-column><el-table-column label='参与人' width='72'><template slot-scope='s'>{{s.row.users}}</template></el-table-column><el-table-column label='时间' width='124'><template slot-scope='s'>{{rvDateText(s.row)}}</template></el-table-column></el-table><el-empty v-if='!rvList.length' description='暂无评审记录'></el-empty></div></el-dialog>");
+parts.push("</div>");
+parts.push("<SC"+"RIPT src='https://unpkg.com/vue@2/dist/vue.js'></SC"+"RIPT>");
+parts.push("<SC"+"RIPT src='https://unpkg.com/element-ui/lib/index.js'></SC"+"RIPT>");
+parts.push("<SC"+"RIPT>var MODULES="+data+";var REVIEWS="+rev+";var HISTS="+hh+";var TABLES="+tb+";var MTIMES="+mts+";var CLCHANGE="+cl+";var RVALL="+rv+";new Vue({el:'#app',data:{modules:MODULES,cur:(MODULES[0]||{}).key||'',reviews:REVIEWS,hists:HISTS,tables:TABLES,mtimes:MTIMES,CL:CLCHANGE,clDlg:false,navHit:'',RV:RVALL,rvDlg:false,rvMod:'',rvStage:'',rvKw:'',rOpen:{},histDlg:false,histTitle:'',histList:[]},computed:{curModule:function(){var c=this.cur;return this.modules.filter(function(x){return x.key===c})[0]||{key:'',name:'',items:[]}},curIndex:function(){var c=this.cur;return this.modules.findIndex(function(x){return x.key===c})},rvList:function(){var kw=(this.rvKw||'').trim().toLowerCase();return this.RV.filter(function(x){if(this.rvMod&&x.modKey!==this.rvMod)return false;if(this.rvStage&&x.stage!==this.rvStage)return false;if(kw){var h2=(x.modName+' '+x.cardName+' '+(x.users||'')+' '+(x.content||'')+' '+(x.rsn||'')).toLowerCase();if(h2.indexOf(kw)<0)return false}return true},this)}},methods:{sel:function(k){this.cur=k;this.navHit='';this.$nextTick(function(){var m=document.querySelector('.main');if(m)m.scrollTop=0})},navTop:function(){var m=document.querySelector('.main');if(m){if(m.scrollTo)m.scrollTo({top:0,behavior:'smooth'});else m.scrollTop=0}this.navHit=''},navTo:function(it){this.navHit=it.k;var el=document.querySelector('[data-card-key=\"'+it.k+'\"]');if(!el)return;if(el.scrollIntoView)el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('rv-hit');setTimeout(function(){el.classList.remove('rv-hit')},2400)},rvLocate:function(row){if(!row||!row.cardKey){this.$message.warning('该卡片已被删除，无法定位');return}var mi=-1;this.modules.forEach(function(m,i){m.items.forEach(function(it){if(it.k===row.cardKey)mi=i})});if(mi<0){this.$message.warning('该卡片已被删除，无法定位');return}this.rvDlg=false;this.cur=this.modules[mi].key;this.$nextTick(function(){var el=document.querySelector('[data-card-key=\"'+row.cardKey+'\"]');if(!el)return;if(el.scrollIntoView)el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('rv-hit');setTimeout(function(){el.classList.remove('rv-hit')},2400)})},clLocate:function(h){if(!h||h.gone||!h.cardKey){this.$message.warning('该卡片已被删除，无法定位');return}var mi=-1;this.modules.forEach(function(m,i){m.items.forEach(function(it){if(it.k===h.cardKey)mi=i})});if(mi<0){this.$message.warning('该卡片已被删除，无法定位');return}this.clDlg=false;this.cur=this.modules[mi].key;this.$nextTick(function(){var el=document.querySelector('[data-card-key=\"'+h.cardKey+'\"]');if(!el)return;if(el.scrollIntoView)el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('rv-hit');setTimeout(function(){el.classList.remove('rv-hit')},2400)})},openHist:function(it){this.histTitle=it.t;this.histList=(this.hists[it.k]||[]).slice();this.histDlg=true},toggleR:function(k){this.$set(this.rOpen,k,!this.rOpen[k])},rvBaseDate:function(s){return String(s||'').replace(/（已修改[^）]*）/g,'').trim()},rvDateText:function(r){var b=this.rvBaseDate(r.date);if(r.mod)return b+'（已修改 '+r.mod+'）';if(r.edited)return b+'（已修改）';return b},rvStatusOf:function(r){return (r&&r.st)||'未标记'},rvStType:function(r){var s=(r&&r.st)||'';return s==='已修改'?'success':(s==='不予修改'?'warning':'info')},rvStatusNoFix:function(r){return (r&&r.st)==='不予修改'},rvRsnText:function(r){var s=(r&&r.rsn||'').trim();return s||'（未填写）'}}});</SC"+"RIPT></body></html>");
+var h=parts.join("").replace(/SC"+"RIPT/g,"script");
+var blob=new Blob([h],{type:"text/html"});
+var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(DIR_NAME||"PRD")+"-PRD-归档"+ts+"（只读）.html";a.click();
+this.archDlg=false;this.$message.success("已生成只读归档文档，放回本文件夹即可交付");
+}
+},
+mounted(){
+if(this.titleCustom)document.title=this.docTitle;
+}});
+</script>
+</body>
+</html>

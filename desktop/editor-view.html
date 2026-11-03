@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PRD文档</title><script src="theme.js"></script>
+<link rel="stylesheet" href="vendor/theme/index.css">
+<style>body{margin:0;background:var(--surface-soft)}[v-cloak]{display:none}
+/* 顶部公共区：仅覆盖右侧内容区，不占用左侧导航 */
+.topbar{height:52px;flex:none;background:#fff;border-bottom:1px solid #ebeef5;display:flex;align-items:center;padding:0 20px;gap:10px}
+.topbar .sp{flex:1}
+.layout{display:flex;height:100vh;overflow:hidden}
+.rightcol{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;position:relative}
+.left{width:300px;flex:none;background:#fff;border-right:1px solid #ebeef5;display:flex;flex-direction:column}
+.left-head{padding:16px;border-bottom:1px solid #ebeef5}
+.left-head h1{font-size:16px;margin:0 0 6px}
+.menu{flex:1;overflow:auto}
+.menu .el-menu{border-right:none}
+.main{flex:1;overflow:auto;padding:20px 28px}
+.field{margin-bottom:16px}
+.card-head{display:flex;align-items:center}
+.card-head .sp{flex:1}
+.card-no{color:var(--ink-muted);font-weight:400;margin-right:5px;font-variant-numeric:tabular-nums;min-width:34px;display:inline-block}
+.el-menu-item .mod-del{display:none;float:right;margin-top:14px;color:#c0c4cc;font-size:12px}
+.el-menu-item:hover .mod-del{display:inline-block}
+.el-menu-item .mod-del:hover{color:#f56c6c}
+.el-menu-item .mod-edit{margin-right:8px}
+.el-menu-item .mod-edit:hover{color:#409EFF}
+.review-item{border-bottom:1px dashed #f0d9a8;padding:8px 0}
+.review-item:last-child{border-bottom:none}
+/* 评审记录总览：筛选条 + 列表 */
+.rv-bar{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.rv-dlg{max-width:1200px;margin-bottom:0!important}
+.prd-edit-dlg{margin-bottom:0!important}
+.prd-edit-dlg .el-dialog__body{max-height:calc(92vh - 200px);overflow-y:auto;overflow-x:hidden}
+.prd-edit-dlg.is-fullscreen .el-dialog__body{max-height:calc(100vh - 190px)}
+.rv-bar .el-input,.rv-bar .el-select{width:auto}
+.rv-row-mod{color:#409EFF}
+.rv-row-card{font-weight:600;color:var(--ink)}
+.rv-row-del{color:#c0c4cc}
+.rv-no{color:#409EFF;cursor:pointer;font-weight:600;font-variant-numeric:tabular-nums;text-decoration:underline;text-underline-offset:2px}
+.rv-no:hover{color:#66b1ff}
+/* 定位命中时给目标卡片加高亮 */
+.field.rv-hit{box-shadow:0 0 0 2px #409EFF;border-radius:4px;transition:box-shadow .3s}
+.rv-locate{margin-left:8px}
+.rv-stats{font-size:13px;color:var(--ink-muted);margin-bottom:8px}
+.cl-tip{margin-top:10px;font-size:12px;color:var(--ink-muted);line-height:1.6}
+.cl-tl{max-height:calc(92vh - 232px);overflow-y:auto;overflow-x:hidden;padding-right:6px}
+/* 右侧悬浮定位栏：返回顶部 + 当前模块各卡片 */
+.navrail{position:absolute;right:10px;bottom:16px;z-index:50;display:flex;flex-direction:column;gap:6px;align-items:center;max-height:calc(100% - 130px)}
+.navrail-list{display:flex;flex-direction:column;gap:6px;align-items:center;overflow-y:auto;overflow-x:hidden;max-height:100%;padding:2px}
+.navdot{width:16px;height:5px;border-radius:3px;background:#dcdfe6;cursor:pointer;flex:none;transition:all .15s}
+.navdot:hover{background:#409EFF;width:22px}
+.navdot.hit{background:#409EFF;width:22px}
+.navtop{width:26px;height:26px;border-radius:50%;border:1px solid #dcdfe6;background:#fff;color:var(--ink-muted);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
+.navtop:hover{border-color:#409EFF;color:#409EFF}
+.prd-body{font-size:13px;color:var(--ink-secondary);line-height:1.7}
+.prd-h{font-size:13px;font-weight:700;color:var(--ink);margin:10px 0 6px}
+.prd-meta{margin:3px 0;line-height:1.7}
+.prd-meta .k{font-weight:700;color:var(--ink);margin-right:6px}
+.prd-p{margin:3px 0;white-space:pre-wrap}
+.prd-li{margin:3px 0 3px 4px}
+.prd-gap{height:6px}
+.prd-tblwrap{margin:6px 0 10px}
+.prd-cap{font-size:12px;font-weight:700;color:#409EFF;margin:8px 0 4px}
+table.prd-tbl{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+table.prd-tbl th,table.prd-tbl td{border:1px solid #ebeef5;padding:4px 6px;text-align:left;vertical-align:top;word-break:break-all}
+table.prd-tbl th{background:#fafafa;color:var(--ink-muted);font-weight:400}
+table.prd-tbl td.prd-idx{width:46px;text-align:center;color:var(--ink-muted)}
+.field.sub{border-left:3px solid #409EFF;margin-top:-8px}
+.field.sub .el-card__header{padding:8px 12px;background:#f7fbff}
+.tag{display:inline-block;font-size:12px;line-height:20px;padding:0 8px;border-radius:10px;margin-right:8px}
+.tag-pop{background:#ecf5ff;color:#409EFF;border:1px solid #d9ecff}
+.tag-det{background:#f0f9eb;color:#67c23a;border:1px solid #e1f3d8}
+.sub-ttl{font-size:12px;color:var(--ink-muted);font-weight:400}
+</style>
+<link rel="stylesheet" href="editor.css"><link rel="stylesheet" href="design-system.css"><link rel="stylesheet" href="ux-editor.css"></head>
+<body>
+<div id="app" v-cloak>
+<div class="layout">
+<div class="left">
+<div class="left-head"><div class="document-heading"><strong class="document-title" :title="docTitle">{{docTitle}}</strong><el-button type="text" size="mini" class="document-rename" aria-label="修改标题" title="修改标题" @click="renameDocument"><i class="el-icon-edit"></i></el-button></div><el-button v-if="!prototype" type="text" size="mini" class="prototype-link prototype-empty" @click="linkPrototype"><i class="el-icon-link"></i> 关联对应原型</el-button><div v-else class="prototype-association"><el-button type="text" size="mini" class="prototype-link" :title="prototype.target" @click="openPrototype"><i class="el-icon-link"></i> {{prototype.name||'打开对应原型'}}</el-button><el-button type="text" size="mini" @click="linkPrototype">修改关联</el-button></div></div>
+<div class="module-search"><div class="module-search-heading"><span>文档模块</span><span>{{modules.length}}</span></div><el-input v-model="moduleQuery" size="small" clearable prefix-icon="el-icon-search" placeholder="搜索模块" aria-label="搜索文档模块"></el-input></div><div class="menu">
+<el-menu :default-active="cur" @select="selMod">
+<el-menu-item v-for="(m,i) in modules" :key="m.key" :index="m.key" v-show="!moduleQuery||m.name.toLowerCase().includes(moduleQuery.toLowerCase())">
+<span class="module-name" :title="(i+1)+'. '+m.name">{{i+1}}. {{m.name}}</span><div class="module-actions"><button type="button" class="module-action" title="修改模块名称" :aria-label="'修改模块：'+m.name" @click.stop="openEditMod(m)"><i class="el-icon-edit"></i></button><button type="button" class="module-action module-delete" title="删除该模块" :aria-label="'删除模块：'+m.name" @click.stop="delModule(m)"><i class="el-icon-delete"></i></button></div>
+</el-menu-item>
+</el-menu><p v-if="moduleQuery&&!modules.some(m=>m.name.toLowerCase().includes(moduleQuery.toLowerCase()))" class="module-search-empty">没有匹配的模块</p>
+<div style="border-top:1px solid #ebeef5;padding:10px 12px;flex:none"><el-button size="small" type="primary" plain style="width:100%" @click="openNewMod">新增模块</el-button></div>
+</div>
+</div>
+<div class="rightcol">
+<div class="topbar">
+<span class="sp"></span>
+<el-button v-if="deleted.length" size="small" type="warning" plain @click="delDlg=true">回收站 {{deleted.length}}</el-button>
+
+<el-button-group class="review-recording-split"><el-tooltip placement="bottom" :open-delay="250" effect="dark" popper-class="mic-tooltip" :content="micTip()"><span class="mic-tooltip-anchor"><el-button class="mic-icon-button" size="small" :type="micState==='recording'?'danger':'primary'" plain :aria-label="micText" :disabled="['requesting','draining','saving'].includes(micState)" @click="toggleMic"><span v-if="micState==='idle'" class="mic-record-icon" aria-hidden="true"></span><span v-else-if="micState==='recording'" class="mic-stop-icon" aria-hidden="true"></span><i v-else :class="micState==='retry'?'el-icon-refresh':'el-icon-loading'" aria-hidden="true"></i><span v-if="micState==='recording'" class="mic-duration" aria-live="off">{{micTime}}</span></el-button></span></el-tooltip><el-button size="small" plain @click="recordingsDlg=true">评审录音</el-button></el-button-group><el-button size="small" type="primary" plain @click="openRvAll">评审记录总览</el-button><el-button size="small" plain @click="openClAll">历史需求总览</el-button>
+</div>
+<div v-if="curModule.key" class="module-heading"><h2>{{curIndex+1}}. {{curModule.name}}</h2><el-button size="small" type="primary" plain @click="openNewItem">新增数据项</el-button></div>
+<div class="main" @scroll.passive="trackFloor">
+<el-empty v-if="!modules.length" description="从一个模块开始整理需求，点击左侧“新增模块”"></el-empty>
+<template v-for="(it,ii) in curModule.items">
+<el-card class="field" :key="it.k" :data-card-key="it.k" shadow="never">
+<div slot="header" class="card-head"><span class="card-no">{{curIndex+1}}.{{ii+1}}.</span><span>{{it.t}}</span><span style="font-size:12px;color:var(--ink-muted);margin-left:8px">{{mtimes[it.k]||""}}</span><span class="sp"></span><div class="card-actions"><el-button size="mini" plain :disabled="isFirst(it)" @click="moveItem(it,-1)" class="card-move" aria-label="上移" title="上移卡片"><i class="el-icon-top" aria-hidden="true"></i></el-button><el-button size="mini" plain :disabled="isLast(it)" @click="moveItem(it,1)" class="card-move" aria-label="下移" title="下移卡片"><i class="el-icon-bottom" aria-hidden="true"></i></el-button><el-button size="mini" plain @click="openEdit(it)">编辑</el-button><el-button size="mini" type="warning" plain @click="openReview(it)">评审记录</el-button><el-dropdown trigger="click" @command="command=>cardMoreCommand(command,it)"><el-button size="mini" plain>更多 <i class="el-icon-arrow-down"></i></el-button><el-dropdown-menu slot="dropdown"><el-dropdown-item command="history">历史需求</el-dropdown-item><el-dropdown-item command="delete" divided style="color:#f56c6c">删除卡片</el-dropdown-item></el-dropdown-menu></el-dropdown></div></div>
+<div class="card-body-content" style="font-size:14px;color:var(--ink-secondary);line-height:1.8" v-if="blocks[it.k]&&blocks[it.k].main" v-html="blocks[it.k].main"></div>
+<div style="font-size:14px;color:var(--ink-muted)" v-if="(!blocks[it.k]||(!blocks[it.k].main&&!blocks[it.k].pop&&!blocks[it.k].det))&&!(tables[it.k]&&tables[it.k].length)">内容待补充</div>
+<div v-if="tbls(it.k,'main').length" style="margin-top:10px">
+<div v-for="(t,ti) in tbls(it.k,'main')" :key="ti" style="margin-bottom:10px">
+<div v-if="t.name" style="font-size:13px;font-weight:700;color:var(--ink-secondary);margin-bottom:4px">{{t.name}}</div>
+<el-table :data="t.rows" border size="mini">
+<el-table-column v-for="(c,ci) in t.cols" :key="ci" :label="c||('列'+(ci+1))"><template slot-scope="s">{{s.row[ci]}}</template></el-table-column>
+</el-table>
+</div>
+</div>
+<div v-if="attachments[it.k]&&attachments[it.k].length" class="card-attachments"><strong>附件</strong><div v-for="a in attachments[it.k]" :key="a.id" class="attachment-row"><el-button type="text" @click="openAttachment(a)">📎 {{a.name}}</el-button><span>{{(a.size/1024).toFixed(1)}} KB</span></div></div>
+<div v-for="(flow,fi) in flowList(flows[it.k])" :key="flow.id||fi" class="card-flow"><strong>{{flow.name||('流程图 '+(fi+1))}}</strong><prd-flow-editor :value="flow" :readonly="true"></prd-flow-editor></div><el-divider></el-divider>
+<div class="review-panel" style="background:#fdf6ec;border:1px solid #faecd8;border-radius:4px;padding:10px 12px">
+<div class="review-panel-heading"><strong>评审记录</strong><span class="review-count">{{(reviews[it.k]||[]).length}}</span><span class="review-heading-space"></span><el-button type="text" size="mini" :title="rOpen[it.k]?'收起评审记录':'展开评审记录'" :aria-label="rOpen[it.k]?'收起评审记录':'展开评审记录'" :aria-expanded="String(!!rOpen[it.k])" class="review-icon-button" @click="toggleR(it.k)"><i :class="rOpen[it.k]?'el-icon-arrow-up':'el-icon-arrow-down'" aria-hidden="true"></i></el-button></div>
+<div v-show="rOpen[it.k]">
+<div v-if="!reviews[it.k]||!reviews[it.k].length" style="font-size:13px;color:var(--ink-muted)">暂无评审记录</div>
+<div v-else>
+<div class="review-item" v-for="(r,i) in reviews[it.k]" :key="i">
+<div class="review-item-heading"><el-tag size="mini">{{r.stage}}</el-tag><span class="review-time">{{rvDateText(r)}}</span><span class="review-heading-space"></span><div class="review-item-actions"><el-button type="text" size="mini" title="修改评审记录" aria-label="修改评审记录" class="review-icon-button" @click="editReview(it.k,i)"><i class="el-icon-edit" aria-hidden="true"></i></el-button><el-button type="text" size="mini" class="review-delete review-icon-button" title="删除评审记录" aria-label="删除评审记录" @click="delReview(it.k,i)"><i class="el-icon-delete" aria-hidden="true"></i></el-button></div></div>
+<div class="review-participants"><span>参与人：</span><div class="review-people-tags"><el-tag v-for="name in reviewParticipantNames(r.users)" :key="name" size="mini">{{name}}</el-tag><span v-if="!reviewParticipantNames(r.users).length" class="review-people-empty">未填写</span></div></div>
+<div class="review-content" style="font-size:13px;color:var(--ink-secondary);margin-top:4px;white-space:pre-wrap">{{r.content}}</div>
+<div v-if="rvStatusOf(r)==='不予修改'" style="font-size:12px;color:var(--warning);margin-top:2px;white-space:pre-wrap">不修改理由：{{r.rsn||'（未填写）'}}<el-button type="text" size="mini" style="margin-left:6px" @click="openRsn(it.k,i)">修改</el-button></div>
+<div class="review-status-row">
+<span style="font-size:12px;color:var(--ink-muted);margin-right:10px">处理状态：</span>
+<el-checkbox :value="rvStatusOf(r)==='已修改'" @change="onFixCheck(it.k,i)">已修改</el-checkbox>
+<el-checkbox :value="rvStatusOf(r)==='不予修改'" @change="onDenyCheck(it.k,i)" style="margin-left:16px">不予修改</el-checkbox>
+</div>
+</div>
+</div>
+</div>
+</div>
+</el-card>
+</template>
+<el-empty v-if="curModule.key && !curModule.items.length" description="该模块数据项待补充"></el-empty>
+</div>
+<nav class="navrail" :class="{'is-expanded':navExpanded}" aria-label="卡片楼层导航" v-if="curModule.items.length">
+<button type="button" class="floor-toggle" :aria-expanded="String(navExpanded)" :title="navExpanded?'收起楼层目录':'展开楼层目录'" @click="toggleFloors"><i :class="navExpanded?'el-icon-s-fold':'el-icon-s-unfold'"></i><span v-if="navExpanded">本模块目录 · {{curModule.items.length}}</span></button>
+<input v-if="navExpanded" class="floor-search" v-model="navQuery" placeholder="搜索编号或标题" aria-label="搜索楼层"><div class="navrail-list">
+<button type="button" v-for="it in (navExpanded?floorItems:curModule.items.map((item,index)=>Object.assign({},item,{floorNo:index+1})))" :key="it.k" class="navdot" :class="{hit:navHit===it.k}" :aria-current="navHit===it.k?'location':null" :title="(curIndex+1)+'.'+it.floorNo+' '+it.t" @click="navTo(it)"><span class="floor-number">{{it.floorNo}}</span><span v-if="navExpanded" class="floor-title">{{it.t}}</span></button>
+<div v-if="!floorItems.length" class="floor-empty">没有匹配的卡片</div></div>
+<button type="button" class="navtop" title="返回顶部" aria-label="返回顶部" @click="navTop"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M5 4h14M12 20V9m-5 5 5-5 5 5"/></svg><span v-if="navExpanded">返回顶部</span></button>
+</nav>
+</div>
+</div>
+<el-dialog :lock-scroll="false" :close-on-click-modal="false" :title="editKey?'编辑内容':'新增数据项'" :visible.sync="editDlg" :fullscreen="editFull" width="560px" top="8vh" custom-class="prd-edit-dlg">
+<el-button class="edit-fullscreen-toggle" :aria-label="editFull?'退出全屏':'全屏'" type="text" @click="editFull=!editFull" :title="editFull?'退出全屏':'全屏'" style="position:absolute;top:18px;right:48px;font-size:16px;color:var(--ink-muted);padding:0"><i :class="editFull?'prd-icon-exit-fullscreen':'el-icon-full-screen'"></i></el-button>
+<el-form label-width="96px" size="small">
+<el-form-item label="数据项名称"><el-input size="small" v-model="editName" placeholder="卡片名称，改这里即可重命名卡片"></el-input></el-form-item>
+<el-form-item label="PRD正文"><prd-rich-editor v-if="editDlg" :key="editKey || 'new'" v-model="editContent"></prd-rich-editor></el-form-item>
+<el-form-item label="附件"><div class="attachment-drop" @dragover.prevent @drop="dropAttachments"><span>从右侧项目目录拖拽文件到这里</span><el-button size="mini" @click="chooseAttachments">选择附件</el-button><small>单个文件最大 10 MB，附件内容随 PRD 保存</small></div><div v-for="(a,ai) in editAttachments" :key="a.id" class="attachment-row"><el-button type="text" @click="openAttachment(a)">{{a.name}}</el-button><span>{{(a.size/1024).toFixed(1)}} KB</span><el-button type="text" @click="editAttachments.splice(ai,1)">移除</el-button></div></el-form-item>
+<el-form-item label="流程图"><el-button size="mini" type="primary" plain @click="addFlow">添加流程图</el-button><div v-for="(flow,fi) in editFlow" :key="flow.id||fi" class="flow-section"><div class="flow-section-head"><el-input size="small" :value="flow.name" :placeholder="'流程图 '+(fi+1)" maxlength="100" aria-label="流程图名称" @input="value=>$set(flow,'name',value)"></el-input><el-button type="text" size="mini" @click="editFlow.splice(fi,1)">删除流程图</el-button></div><prd-flow-editor v-if="editDlg" v-model="editFlow[fi]"></prd-flow-editor></div></el-form-item>
+<el-form-item label="表格">
+<el-button size="mini" type="primary" plain @click="addTable">添加表格</el-button>
+<div v-for="(t,ti) in editTables" :key="ti" class="table-edit-panel">
+<div style="margin-bottom:6px;display:flex;align-items:center"><span style="flex:none;width:70px;font-size:13px;color:var(--ink-secondary)">表格名称</span><el-input size="mini" v-model="t.name" placeholder="请输入表格名称" style="flex:1"></el-input></div>
+<div style="margin-bottom:6px;display:flex;align-items:center"><span style="flex:none;width:70px;font-size:13px;color:var(--ink-secondary)">所属卡片</span><el-select size="mini" v-model="t.pos" style="flex:1"><el-option label="数据项卡" value="main"></el-option></el-select></div>
+<div><el-button size="mini" @click="addRow(t)">加一行</el-button><el-button size="mini" @click="addCol(t)">加一列</el-button><el-button size="mini" type="danger" plain @click="editTables.splice(ti,1)">删除表格</el-button></div>
+<table class="table-edit-grid">
+<tr><td style="width:30px"></td><td v-for="(c,ci) in t.cols" :key="ci" class="table-edit-cell"><el-input size="mini" v-model="t.cols[ci]" placeholder="列名"></el-input><el-button type="text" size="mini" @click="delCol(t,ci)">删列</el-button></td></tr>
+<tr v-for="(r,ri) in t.rows" :key="ri"><td class="table-edit-row-action"><el-button type="text" size="mini" @click="t.rows.splice(ri,1)">删行</el-button></td><td v-for="(cell,ci) in r" :key="ci" class="table-edit-cell"><el-input size="mini" v-model="r[ci]" placeholder="单元格"></el-input></td></tr>
+</table>
+</div>
+</el-form-item>
+</el-form>
+<div slot="footer"><el-button size="small" @click="editDlg=false">取消</el-button><el-button size="small" type="primary" data-confirm-action @click="saveEdit">保存</el-button></div>
+</el-dialog>
+<el-dialog :lock-scroll="false" :close-on-click-modal="false" :title="histTitle+' - 历史需求内容'" :visible.sync="histDlg" :fullscreen="dialogFull.hist" @closed="dialogFull.hist=false" width="600px" custom-class="utility-dialog"><template slot="title"><span class="utility-dialog-title">{{histTitle+' - 历史需求内容'}}</span><button type="button" class="utility-fullscreen" :title="dialogFull.hist?'退出全屏':'全屏'" :aria-label="dialogFull.hist?'退出全屏':'全屏'" :aria-pressed="String(dialogFull.hist)" @click="dialogFull.hist=!dialogFull.hist;$nextTick(rvCalcH)"><i :class="dialogFull.hist?'prd-icon-exit-fullscreen':'el-icon-full-screen'" aria-hidden="true"></i></button></template>
+<el-timeline v-if="histList.length">
+<el-timeline-item v-for="(h,i) in histList" :key="i" :timestamp="h.date" placement="top">
+<el-card shadow="never" style="font-size:13px;color:var(--ink-secondary)"><el-tag size="mini" :type="h.label&&h.label.indexOf('首次')>=0?'success':'info'" style="margin-bottom:8px">{{h.label||'历史版本'}}</el-tag><div v-html="renderDoc(h.content||'')"></div>
+<div v-if="h.tables&&h.tables.length" style="margin-top:8px">
+<div v-for="(t,ti) in h.tables" :key="ti" style="margin-bottom:8px">
+<div v-if="t.name" style="font-weight:700;color:var(--ink-secondary);margin-bottom:4px">{{t.name}}</div>
+<el-table :data="t.rows" border size="mini"><el-table-column v-for="(c,ci) in t.cols" :key="ci" :label="c||('列'+(ci+1))"><template slot-scope="s">{{s.row[ci]}}</template></el-table-column></el-table>
+</div>
+</div>
+</el-card>
+</el-timeline-item>
+</el-timeline>
+<el-empty v-else description="暂无历史需求记录"></el-empty>
+</el-dialog>
+<el-dialog :lock-scroll="false" :close-on-click-modal="false" :title="editIdx>=0?'修改评审记录':'新增评审记录'" :visible.sync="dlg" width="560px" top="16px" custom-class="review-edit-dialog"><el-form label-position="top" size="small">
+<el-form-item label="评审阶段"><el-select v-model="form.stage" style="width:100%"><el-option label="内部评审" value="内部评审"></el-option><el-option label="技术评审" value="技术评审"></el-option><el-option label="开发评审" value="开发评审"></el-option></el-select></el-form-item>
+<el-form-item label="评审参与人员"><prd-participant-tags v-model="form.users" :options="peopleOptions()" @remember="rememberPeople" @manage="managePeople"></prd-participant-tags></el-form-item>
+<el-form-item label="评审意见 / 结论"><el-input type="textarea" :rows="5" v-model="form.content" placeholder="填写本次评审的意见、结论或待处理事项"></el-input><div class="review-form-help">评审意见仅用于记录；修改正文请使用卡片上的“编辑”。</div></el-form-item>
+</el-form>
+<div slot="footer"><el-button size="small" @click="dlg=false">取消</el-button><el-button size="small" type="primary" data-confirm-action @click="saveReview">{{editIdx>=0?'保存修改':'添加记录'}}</el-button></div>
+</el-dialog>
+<el-dialog :lock-scroll="false" :close-on-click-modal="false" title="新增模块" :visible.sync="newModDlg" width="420px">
+<el-form label-width="90px" size="small"><el-form-item label="模块名称"><el-input v-model="newModName" placeholder="如：全局"></el-input></el-form-item></el-form>
+<div slot="footer"><el-button size="small" @click="newModDlg=false">取消</el-button><el-button size="small" type="primary" data-confirm-action @click="saveNewMod">新增</el-button></div>
+</el-dialog>
+<el-dialog :lock-scroll="false" :close-on-click-modal="false" title="历史需求总览" :visible.sync="clDlg" :fullscreen="dialogFull.cl" @closed="dialogFull.cl=false" width="92%" custom-class="utility-dialog rv-dlg" top="5vh"><template slot="title"><span class="utility-dialog-title">{{'历史需求总览'}}</span><button type="button" class="utility-fullscreen" :title="dialogFull.cl?'退出全屏':'全屏'" :aria-label="dialogFull.cl?'退出全屏':'全屏'" :aria-pressed="String(dialogFull.cl)" @click="dialogFull.cl=!dialogFull.cl;$nextTick(rvCalcH)"><i :class="dialogFull.cl?'prd-icon-exit-fullscreen':'el-icon-full-screen'" aria-hidden="true"></i></button></template>
+<div class="rv-bar">
+<el-select v-model="clMod" size="small" clearable placeholder="全部模块" style="width:200px">
+<el-option v-for="m in modules" :key="m.key" :label="m.name" :value="m.key"></el-option>
+</el-select>
+<el-select v-model="clType" size="small" clearable placeholder="全部操作" style="width:150px">
+<el-option v-for="t in clTypes" :key="t.v" :label="t.l" :value="t.v"></el-option>
+</el-select>
+<el-input v-model="clKw" size="small" clearable placeholder="搜索卡片 / 修改内容" style="width:220px"></el-input>
+<el-button size="small" @click="clMod='';clType='';clKw=''">重置</el-button>
+<span style="flex:1"></span>
+<span class="rv-stats">共 {{clList.length}} 条历史需求记录</span>
+</div>
+<div class="cl-tl">
+<el-timeline v-if="clList.length">
+<el-timeline-item v-for="h in clList" :key="h.id" :timestamp="h.t" placement="top">
+<el-card shadow="never" style="font-size:13px;color:var(--ink-secondary)">
+<el-tag size="mini" :type="h.tagType">{{h.op}}</el-tag>
+<span style="margin-left:8px;font-size:12px;color:var(--ink-muted)">{{h.modName||'-'}} / </span><span :class="h.cardGone?'rv-row-del':'rv-no'" :title="h.cardGone?'该卡片已删除，无法定位':'点击定位到 '+(h.no||'')+' '+(h.cardName||'')" @click="clLocate(h)">{{h.no?h.no+' ':''}}{{h.cardName||'-'}}</span>
+<div v-if="h.detail" style="font-size:12px;color:var(--ink-muted);margin-top:4px">{{h.detail}}</div>
+<div v-html="renderDoc(h.content||'')" style="margin-top:8px"></div>
+<div v-if="h.tables&&h.tables.length" style="margin-top:8px">
+<div v-for="(t,ti) in h.tables" :key="ti" style="margin-bottom:8px">
+<div v-if="t.name" style="font-weight:700;color:var(--ink-secondary);margin-bottom:4px">{{t.name}}</div>
+<el-table :data="t.rows" border size="mini"><el-table-column v-for="(c,ci) in t.cols" :key="ci" :label="c||('列'+(ci+1))"><template slot-scope="s">{{s.row[ci]}}</template></el-table-column></el-table>
+</div>
+</div>
+</el-card>
+</el-timeline-item>
+</el-timeline>
+<el-empty v-else description="暂无历史需求记录"></el-empty>
+</div>
+<div class="cl-tip">记录自本功能上线后的操作开始；更早的修改请看每张卡片里的「历史需求」。删除卡片时会留下一条记录，被删的内容仍可回看。</div>
+</el-dialog>
+<el-dialog :lock-scroll="false" :close-on-click-modal="false" title="评审录音" :visible.sync="recordingsDlg" :fullscreen="dialogFull.recordings" @closed="dialogFull.recordings=false" width="90%" top="5vh" custom-class="utility-dialog recordings-dialog"><template slot="title"><span class="utility-dialog-title">{{'评审录音'}}</span><button type="button" class="utility-fullscreen" :title="dialogFull.recordings?'退出全屏':'全屏'" :aria-label="dialogFull.recordings?'退出全屏':'全屏'" :aria-pressed="String(dialogFull.recordings)" @click="dialogFull.recordings=!dialogFull.recordings;$nextTick(rvCalcH)"><i :class="dialogFull.recordings?'prd-icon-exit-fullscreen':'el-icon-full-screen'" aria-hidden="true"></i></button></template><review-recordings v-if="recordingsDlg" v-model="recordings"></review-recordings></el-dialog><el-dialog :lock-scroll="false" :close-on-click-modal="false" title="评审记录总览" :visible.sync="rvDlg" :fullscreen="dialogFull.rv" @closed="dialogFull.rv=false" width="92%" custom-class="utility-dialog rv-dlg" top="5vh"><template slot="title"><span class="utility-dialog-title">{{'评审记录总览'}}</span><button type="button" class="utility-fullscreen" :title="dialogFull.rv?'退出全屏':'全屏'" :aria-label="dialogFull.rv?'退出全屏':'全屏'" :aria-pressed="String(dialogFull.rv)" @click="dialogFull.rv=!dialogFull.rv;$nextTick(rvCalcH)"><i :class="dialogFull.rv?'prd-icon-exit-fullscreen':'el-icon-full-screen'" aria-hidden="true"></i></button></template>
+<div class="rv-bar">
+<el-select v-model="rvMod" size="small" clearable placeholder="全部模块" style="width:200px">
+<el-option v-for="m in modules" :key="m.key" :label="m.name" :value="m.key"></el-option>
+</el-select>
+<el-select v-model="rvStage" size="small" clearable placeholder="全部阶段" style="width:140px">
+<el-option label="内部评审" value="内部评审"></el-option>
+<el-option label="技术评审" value="技术评审"></el-option>
+<el-option label="开发评审" value="开发评审"></el-option>
+</el-select>
+<el-input v-model="rvKw" size="small" clearable placeholder="搜索评审意见 / 参与人" style="width:220px"></el-input>
+<el-button size="small" @click="rvMod='';rvStage='';rvKw=''">重置</el-button>
+<span style="flex:1"></span>
+<span class="rv-stats">共 {{rvList.length}} 条评审记录</span>
+</div>
+<el-table :empty-text="rvKw||rvMod||rvStage?'没有符合筛选条件的评审记录':'暂无评审记录'" :data="rvList" border size="mini" :row-class-name="rvRowClass" :max-height="rvTblH" style="width:100%">
+<el-table-column label="序号" min-width="52"><template slot-scope="s"><span v-if="s.row.no" class="rv-no" :title="'点击定位到 '+s.row.no" @click="rvLocate(s.row)">{{s.row.no}}</span><span v-else class="rv-row-del">-</span></template></el-table-column>
+<el-table-column label="模块" min-width="112"><template slot-scope="s"><span class="rv-row-mod">{{s.row.modName}}</span></template></el-table-column>
+<el-table-column label="卡片" min-width="112"><template slot-scope="s"><span :class="s.row.cardName==='（卡片已删除）'?'rv-row-del':'rv-row-card'">{{s.row.cardName}}</span></template></el-table-column>
+<el-table-column label="阶段" width="90"><template slot-scope="s"><el-tag size="mini" :type="rvStageType(s.row.rec.stage)">{{s.row.rec.stage}}</el-tag></template></el-table-column>
+<el-table-column label="处理标记" width="148"><template slot-scope="s"><el-tag size="mini" :type="rvStType(s.row.rec)">{{rvStatusOf(s.row.rec)}}</el-tag><div v-if="rvStatusOf(s.row.rec)==='不予修改'" style="margin-top:4px;color:var(--warning);white-space:pre-wrap;font-size:12px">不修改理由：{{s.row.rec.rsn||'（未填写）'}}</div></template></el-table-column>
+<el-table-column label="评审意见" min-width="148"><template slot-scope="s"><span style="white-space:pre-wrap">{{s.row.rec.content}}</span></template></el-table-column>
+<el-table-column label="参与人" width="72"><template slot-scope="s">{{s.row.rec.users}}</template></el-table-column>
+<el-table-column label="时间" width="170" class-name="review-date-cell"><template slot-scope="s">{{rvDateText(s.row.rec)}}</template></el-table-column>
+</el-table>
+
+</el-dialog>
+<el-dialog :lock-scroll="false" title="已删除（可恢复）" :visible.sync="delDlg" width="760px" top="8vh">
+<div class="rv-bar">
+<span class="rv-stats">共 {{deleted.length}} 项：模块 {{delMods.length}} 个、数据项 {{delItems.length}} 张</span>
+<span style="flex:1"></span>
+<el-button size="small" type="danger" plain @click="restoreAllDel">全部恢复</el-button>
+</div>
+<el-table :data="delList" border size="mini" max-height="400">
+<el-table-column label="类型" width="80"><template slot-scope="s"><el-tag size="mini" :type="s.row.isMod?'danger':'info'">{{s.row.isMod?'模块':'数据项'}}</el-tag></template></el-table-column>
+<el-table-column label="所属模块" min-width="150"><template slot-scope="s">{{s.row.modName}}</template></el-table-column>
+<el-table-column label="名称" min-width="200"><template slot-scope="s"><span :class="s.row.isMod?'rv-row-card':''">{{s.row.name}}</span><span v-if="s.row.isMod" style="font-size:12px;color:var(--ink-muted);margin-left:6px">（含 {{s.row.cardCount}} 张卡一并恢复）</span></template></el-table-column>
+<el-table-column label="操作" width="110"><template slot-scope="s"><el-button size="mini" type="primary" plain @click="restoreDel(s.row)">{{s.row.isMod?'恢复模块':'恢复'}}</el-button></template></el-table-column>
+</el-table>
+<div class="cl-tip">恢复后页面会自动刷新；正文、表格、评审记录与历史需求都按最近一次保存的状态回来。恢复模块会连同该模块下所有被删的卡片一起恢复，本地新建过的卡片会按「历史需求」找回最近一版正文。</div>
+</el-dialog>
+<el-dialog :lock-scroll="false" :close-on-click-modal="false" title="填写不修改理由" :visible.sync="rsnDlg" width="520px">
+<el-form label-width="100px" size="small">
+<el-form-item label="评审意见">
+<div style="font-size:13px;color:var(--ink-secondary);white-space:pre-wrap;background:var(--surface-soft);border-radius:4px;padding:8px;max-height:140px;overflow:auto">{{rsnContent}}</div>
+</el-form-item>
+<el-form-item label="不修改理由">
+<el-input type="textarea" :rows="4" v-model="rsnText" placeholder="请说明为什么不修改（必填）"></el-input>
+</el-form-item>
+</el-form>
+<div slot="footer"><el-button size="small" @click="rsnDlg=false">取消</el-button><el-button size="small" type="primary" data-confirm-action @click="saveRsn">保存</el-button></div>
+</el-dialog>
+<el-dialog :lock-scroll="false" :close-on-click-modal="false" title="修改模块名称" :visible.sync="editModDlg" width="420px">
+<el-form label-width="90px" size="small"><el-form-item label="模块名称"><el-input v-model="editModName" placeholder="请输入模块名称"></el-input></el-form-item></el-form>
+<div slot="footer"><el-button size="small" @click="editModDlg=false">取消</el-button><el-button size="small" type="primary" data-confirm-action @click="saveEditMod">保存</el-button></div>
+</el-dialog>
+<el-dialog :lock-scroll="false" :close-on-click-modal="false" title="新增数据项" :visible.sync="newDlg" width="420px">
+<el-form label-width="90px" size="small"><el-form-item label="数据项名称"><el-input v-model="newName" placeholder="如：企业总量"></el-input></el-form-item></el-form>
+<div slot="footer"><el-button size="small" @click="newDlg=false">取消</el-button><el-button size="small" type="primary" data-confirm-action @click="saveNewItem">新增</el-button></div>
+</el-dialog>
+
+</div>
+<script src="keyboard-confirm.js"></script><script src="vendor/vue.min.js"></script><script src="vendor/element.js"></script><script src="rich-text.js"></script><script src="participant-tags.js"></script><script src="review-recordings.js"></script><script src="flow-editor.js"></script><script src="editor-actions.js"></script><script src="editor-engine.js"></script><script src="editor-adapter.js"></script></body></html>

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob:; connect-src 'none'; media-src 'self' data: blob: http://127.0.0.1:*; frame-src 'self'; object-src 'none'; base-uri 'self';"><title>PRD 工作台</title><script src="theme.js"></script><link rel="stylesheet" href="shell.css"></head>
+<body><link rel="stylesheet" href="directory.css"><link rel="stylesheet" href="preview.css"><link rel="stylesheet" href="design-system.css"><link rel="stylesheet" href="ux-shell.css">
+<div class="app">
+ <aside class="sidebar">
+  <button id="toggleWorkspace" class="workspace-toggle" aria-label="收起工作台" aria-expanded="true" title="收起工作台">‹</button>
+  <div class="brand"><span class="brand-icon">P</span><div>PRD 工作台<small>需求 · 评审 · 交付</small></div></div>
+  <button class="primary wide" id="createProject" aria-label="创建项目"><svg class="create-project-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg><span>创建项目</span></button>
+  <div class="label">我的项目</div>
+  <div id="projects" class="projects"></div>
+  <div class="sidebar-bottom"><button id="openDoc">打开 PRD 文件</button><button id="associate">关联 .prdproj 文件</button><div class="sidebar-meta"><button id="toggleTheme" class="theme-toggle" aria-label="切换至暗黑模式" aria-pressed="false" data-tooltip="切换至暗黑模式"></button><button id="mcpSettings" class="theme-toggle" aria-label="MCP 接入设置" data-tooltip="MCP 接入设置"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3v5M15 3v5M7 8h10v3a5 5 0 0 1-10 0V8Zm5 8v5"/></svg></button><span id="version">离线本地存储</span></div></div>
+ </aside>
+ <section class="workspace">
+  <header><div class="document-heading"><span id="docPath">选择项目，开始整理需求</span></div><button id="retrySave" hidden title="重新尝试写入当前文档">重试保存</button><span id="saveStatus" role="status" aria-live="polite" class="status">本地工作空间</span><button id="toggleDirectory" aria-expanded="true" title="显示或隐藏项目目录">项目目录 ▥</button></header>
+  <div id="micBar" class="mic-bar" hidden><span id="micBarText"></span><button id="micBarStop">结束录音</button></div><div class="content-area">
+   <div class="work-column">
+    <div id="documentTabBar" class="document-tab-bar" hidden><div id="documentTabs" class="document-tabs" role="tablist" aria-label="已打开的 PRD 文档"></div><button id="tabNewDoc" class="tab-new-document" title="新建 PRD" aria-label="新建 PRD 文档">＋</button></div>
+    <div class="toolbar"><div class="tool-group"><button id="newDoc">＋ 新建 PRD</button></div><div class="tool-group document-tools"><button id="save">保存 <kbd>Ctrl S</kbd></button><button id="saveAs">另存为</button><button id="undo" disabled>↶ 撤销 <kbd>Ctrl Z</kbd></button><button id="redo" disabled>↷ 重做 <kbd>Ctrl Y</kbd></button><button id="backup">备份与恢复</button><button id="export">只读归档</button><button id="reveal">文件位置</button></div><details id="moreMenu" class="more-menu"><summary>更多 ▾</summary><div class="more-menu-items"><button id="importHtml">导入旧 HTML</button><button id="clearDocAction" disabled>清空本文档…</button></div></details></div>
+   <div class="content-main">
+  <main id="dashboard">
+   <div class="page-title"><div><span class="eyebrow">PROJECT WORKSPACE</span><h1 id="projectTitle">让每一份需求都有迹可循</h1><p id="projectPath">选择已有项目目录，PRD 可保存在其中任意子文件夹。</p></div><div class="project-actions"><button id="renameProject">重命名</button><button id="locateProject">重新定位</button><button id="refresh">刷新</button><button id="removeProject">移除项目</button></div></div>
+   <div class="intro" id="intro"><div><span class="intro-mark">01</span><h2>项目保持原样，需求有序落盘。</h2><p>原有目录无需调整。每份 PRD 都是独立文件，自动保存、随文件携带，可直接双击打开。</p><button class="primary" id="introCreate">选择项目目录</button></div><div class="intro-cards"><div>需求正文 <span>模块 / 卡片 / 表格</span></div><div>评审闭环 <span>意见 / 状态 / 历史</span></div><div>可靠存储 <span>自动保存 / 备份恢复</span></div></div></div>
+   <div class="section-heading"><h2>项目中的 PRD <span id="docCount">0</span></h2><span>文件按最近修改排序</span></div><div id="documents" class="documents"></div>
+   <div class="section-heading"><h2>最近打开</h2></div><div id="recent" class="recent"></div>
+  </main>
+  <iframe id="editor" title="PRD 编辑器" hidden></iframe>
+  <section id="filePreview" class="file-preview" hidden><div class="preview-heading"><div><strong id="previewName"></strong><p id="previewMeta"></p></div><button id="closePreview">关闭预览</button></div><pre id="previewText"></pre><img id="previewImage" alt="文件预览" hidden></section>
+   </div>
+   <footer><span id="footerInfo">数据只保存在本机 · 无需联网</span><span>自动备份：每 5 分钟 / 保留最近 30 份</span></footer>
+   </div>
+   <div id="directoryResize" class="directory-resize" role="separator" aria-label="调整项目目录宽度" aria-orientation="vertical" tabindex="0"></div>
+   <aside class="directory-panel" aria-label="项目目录">
+    <div class="directory-heading"><strong>项目目录</strong><div><button id="refreshDirectory" title="刷新目录" aria-label="刷新目录">↻</button><button id="collapseDirectory" title="收起目录" aria-label="收起目录">›</button></div></div>
+    <input id="directoryFilter" class="directory-filter" type="search" placeholder="筛选文件…" aria-label="筛选项目文件">
+    <div id="directoryRoot" class="directory-root">尚未选择项目</div>
+    <div id="directoryTree" class="directory-tree"><p class="directory-message">选择项目后显示目录</p></div>
+    <div class="directory-hint">PRD 点击编辑 · 其他文件只读预览</div>
+   </aside>
+  </div>
+ </section>
+</div>
+<dialog id="inputDialog"><button type="button" class="dialog-close" data-native-dialog-close aria-label="关闭" title="关闭"></button><form method="dialog"><h2 id="inputTitle"></h2><p id="inputHelp"></p><input id="inputValue" autocomplete="off" maxlength="150"><div class="dialog-actions"><button value="cancel">取消</button><button class="primary" data-confirm-action value="ok">确定</button></div></form></dialog>
+<dialog id="backupDialog"><button id="backupClose" type="button" class="dialog-close" aria-label="关闭" title="关闭"></button><h2>备份与恢复</h2><p>备份保存在文档旁的 .prd-backups 文件夹。恢复前会备份当前内容。</p><div class="backup-actions"><button id="backupNow" class="primary">立即备份</button></div><div id="backupList"></div></dialog>
+<dialog id="errorDialog"><button type="button" class="dialog-close" data-native-dialog-close aria-label="关闭" title="关闭"></button><h2>操作未完成</h2><p id="errorText"></p><details id="errorDetails" hidden><summary>技术详情</summary><pre id="errorTechnical" style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px"></pre></details><div class="dialog-actions"><button id="errorClose" data-confirm-action class="primary">知道了</button></div></dialog>
+<dialog id="prototypeDialog"><button type="button" class="dialog-close" data-native-dialog-close aria-label="关闭" title="关闭"></button><h2>关联本地原型</h2><p>选择原型入口文件，或从右侧项目目录拖入。</p><div id="prototypeDrop" class="prototype-drop"><span aria-hidden="true">↳</span><strong id="prototypeFileLabel">拖入项目中的原型文件</strong><button id="choosePrototypeFile" type="button">选择原型文件</button></div><label for="prototypeTarget">原型文件路径</label><input id="prototypeTarget" readonly placeholder="尚未选择文件"><button id="editPrototypePath" type="button" class="prototype-path-edit">手动输入路径</button><label for="prototypeName">原型名称</label><input id="prototypeName" placeholder="选择文件后自动填写，可修改" maxlength="150"><p class="prototype-help">HTML 原型请选择 index.html 等入口文件，并保留配套资源目录。关联使用相对路径，移动项目时请一并移动原型文件。</p><div class="dialog-actions"><button id="removePrototype">解除关联</button><button id="cancelPrototype">取消</button><button id="savePrototype" class="primary" data-confirm-action>保存关联</button></div></dialog>
+<dialog id="mcpSettingsDialog" class="mcp-settings-dialog"><button id="closeMcpSettings" type="button" class="dialog-close" aria-label="关闭" title="关闭"></button><h2>MCP 接入设置</h2><p>将配置添加到 AI 客户端的 MCP 设置中，让 AI 连接正在运行的软件并操作项目与 PRD。</p><p>访问范围：软件中已添加的全部项目。AI 可以列出项目，再指定项目打开、新建和修改 PRD。</p><label for="mcpScript">MCP 服务脚本路径</label><input id="mcpScript" placeholder="软件目录中的 resources/mcp/server.cjs"><label for="mcpConfig">手动注册配置（JSON）</label><textarea id="mcpConfig" readonly rows="10" spellcheck="false"></textarea><p>复制配置后，按客户端要求添加 MCP 服务。使用时保持软件或快速预览打开。AI 修改同步到界面，可通过撤销恢复；弹框编辑或录音期间会暂停 AI 操作。</p><div class="dialog-actions"><button id="copyMcpConfig" class="primary">复制配置</button></div></dialog>
+<div id="toast" role="status" hidden></div><script src="keyboard-confirm.js"></script><script src="vendor/lame.min.js"></script><script src="mic-capture.js"></script><script src="error-message.js"></script><script src="renderer.js"></script><script src="ux-shell.js"></script></body></html>

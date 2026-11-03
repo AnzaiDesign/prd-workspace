@@ -1,0 +1,95 @@
+{
+  "name": "prd-workspace",
+  "version": "1.3.3",
+  "description": "PRD与评审管理工具",
+  "author": "PRD Workspace",
+  "private": true,
+  "main": "desktop/main.js",
+  "scripts": {
+    "prepare:editor": "node desktop/prepare.js",
+    "start": "npm run prepare:editor && electron .",
+    "preview": "npm run prepare:editor && node desktop/preview-launcher.js",
+    "test": "node --test desktop/tests/*.test.js",
+    "build": "npm run prepare:editor && electron-builder --win nsis zip --x64",
+    "mcp": "node desktop/mcp/server.cjs"
+  },
+  "devDependencies": {
+    "electron": "^45.0.0",
+    "electron-builder": "^26.18.0",
+    "element-ui": "2.15.14",
+    "lamejs": "^1.2.1",
+    "vue": "2.7.16"
+  },
+  "build": {
+    "appId": "cn.prd.workspace",
+    "productName": "PRD与评审管理工具",
+    "directories": {
+      "output": "releases"
+    },
+    "files": [
+      "desktop/**/*",
+      "!desktop/tests/**/*",
+      "!desktop/prepare.js",
+      "package.json"
+    ],
+    "asar": true,
+    "compression": "normal",
+    "electronDist": "node_modules/electron/dist",
+    "win": {
+      "target": [
+        "nsis",
+        "zip"
+      ],
+      "executableName": "PRD与评审管理工具",
+      "icon": "desktop/app.ico",
+      "signExecutable": false
+    },
+    "fileAssociations": [
+      {
+        "ext": "prdproj",
+        "name": "PRD与评审管理工具文档",
+        "description": "独立 PRD 需求与评审文档",
+        "role": "Editor",
+        "icon": "desktop/document.ico"
+      }
+    ],
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "runAfterFinish": false,
+      "artifactName": "PRD-Workspace-${version}-Setup.${ext}",
+      "include": "desktop/installer.nsh"
+    },
+    "electronLanguages": [
+      "zh-CN",
+      "en-US"
+    ],
+    "extraResources": [
+      {
+        "from": "desktop/document.ico",
+        "to": "document.ico"
+      },
+      {
+        "from": "desktop/mcp",
+        "to": "mcp"
+      },
+      {
+        "from": "desktop/store.js",
+        "to": "mcp/store.js"
+      }
+    ],
+    "artifactName": "PRD-Workspace-${version}-Green.${ext}",
+    "extraFiles": [
+      {
+        "from": "MCP入口.txt",
+        "to": "MCP入口.txt"
+      },
+      {
+        "from": "desktop/mcp/AGENTS.md",
+        "to": "AGENTS.md"
+      }
+    ]
+  }
+}

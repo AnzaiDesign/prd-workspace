@@ -1,0 +1,15 @@
+PRD与评审管理工具 — 软件级 MCP
+
+在软件左下角点击插头图标，复制“MCP 接入设置”中的配置，添加到 AI 客户端。
+配置使用 --connect 指向本软件配置目录的 mcp-connection.json；不需要选择项目或指定 --root。
+使用期间保持软件（或快速预览页面）打开。连接配置涵盖该软件中已添加的全部项目。
+
+先调用 prd_list_projects 获取项目 ID，再使用 projectId 调用：
+prd_select_project、prd_list_files、prd_open_document、prd_create_folder、prd_create_document、prd_read_document、prd_apply_changes。
+修改时必须使用读取所得 hash，保留备份和历史，界面同步更新，可撤销。
+编辑弹框、录音和加载期间会拒绝操作，请等待用户完成后再试。
+正文写入目前为普通文本；附件和流程图数据会保留。录音读取目前返回元数据、转写与纪要，不返回音频二进制。
+MCP 不会自动将录音转成文字，需要客户端具备对应音频能力；暂未提供音频获取工具。
+
+旧的 --root 文件模式保留用于兼容，建议重新复制软件级配置。
+源码和已发布 1.2.2 安装包不同，新功能将在下一次打包后包含。
